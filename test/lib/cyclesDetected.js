@@ -48,7 +48,7 @@ describe('Detect cycles', async () => {
         expect(errors.length).to.equal(1);
     });
 
-    it('should throw error', () => {
+    it('should throw error with message', () => {
         expect(errors[0]).to.equal('Cycles detected');
     });
 });
