@@ -1,10 +1,11 @@
 import polyfill from '@babel/polyfill';
 
-import { map, forEach, reduce, assign, flatten } from 'lodash';
+import { map, forEach, reduce, assign, flatten, clone } from 'lodash';
 import when from 'when';
 import meld from 'meld';
 
 const Promise = when.promise;
+const HEAD = '____HEAD____';
 
 import Graph from '../graph/Graph';
 import GraphVertex from '../graph/GraphVertex';
@@ -17,7 +18,30 @@ function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
-export default function createContext(spec) {
+export default function createContext(originalSpec) {
+    if(originalSpec.hasOwnProperty(HEAD)) {
+        throw new Error(`Component with name ${HEAD} is reserved and not permitted`);
+    }
+
+    const spec = clone(originalSpec);
+
+    /* create additional vertex connected with all others */
+    let componentNames = Object.keys(spec);
+    let headArgs = map(componentNames, (name) => ({$ref: name}))
+    spec[HEAD] = {
+        create: {
+            method: (...resolvedArgs) => {
+                return reduce(componentNames, (res, name, index) => {
+                    assign(res, {
+                        [name]: resolvedArgs[index]
+                    })
+                    return res;
+                }, {})
+            },
+            args: headArgs
+        }
+    }
+
     let entries = Object.entries(spec);
     let vertices = {};
     let argumentsSubstitutions = {};
@@ -97,7 +121,7 @@ export default function createContext(spec) {
             }
         }
 
-        depthFirstSearch(digraph, vertices['A'], {
+        depthFirstSearch(digraph, vertices[HEAD], {
             leaveVertex: leaveVertexCallback,
         })
 
@@ -107,7 +131,7 @@ export default function createContext(spec) {
             })
             return res;
         }, {}).then(context => {
-            return context;
+            return context[HEAD];
         })
     } else {
         throw new Error('Cycles detected')
