@@ -23,7 +23,7 @@ addSyncTestFiles([
     __dirname
 ]);
 
-mocha.run(function(failures) {
+mocha.run((failures) => {
     process.exitCode = failures ? 1 : 0;
     process.exit();
 });
