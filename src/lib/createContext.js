@@ -89,7 +89,7 @@ export default function createContext(spec) {
         }
     }
 
-    depthFirstSearch(digraph, vertices['a'], {
+    depthFirstSearch(digraph, vertices['A'], {
         leaveVertex: leaveVertexCallback,
     })
 
