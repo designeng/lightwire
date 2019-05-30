@@ -1,11 +1,9 @@
-import { map, forEach, assign } from 'lodash';
+import { forEach } from 'lodash';
 import { expect } from 'chai';
 import when from 'when';
-import { msleep } from 'sleep';
 
 import createContext, { HEAD, createReservedNameErrorMessage } from '../../src/lib/createContext';
 
-const Promise = when.promise;
 const noop = () => {}
 
 forEach([HEAD, 'destroy'], name => {
