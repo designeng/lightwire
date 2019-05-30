@@ -49,6 +49,12 @@ const spec = {
                 resolve('D');
             })
         }
+    },
+
+    F: {
+        create: {
+            method: () => 'F'
+        }
     }
 }
 
@@ -81,5 +87,14 @@ describe('Create context from spec', async () => {
 
     it('context should have a component with value', () => {
         expect(context.A).to.equal('CDB');
+    });
+
+    it('context should have free f component with value', () => {
+        expect(context.F).to.equal('F');
+    });
+
+    it('context should have destroy method', () => {
+        expect(context.destroy).to.be.a('function');
+        context.destroy();
     });
 });

@@ -28,12 +28,24 @@ export default function createContext(originalSpec) {
     /* create additional vertex connected with all others */
     let componentNames = Object.keys(spec);
     let headArgs = map(componentNames, (name) => ({$ref: name}))
+
+    /* create destroy method (?) */
+    const destroy = function() {
+        for(let prop in this) {
+            delete this[prop];
+        }
+    }
+    destroy.bind(spec);
+
     spec[HEAD] = {
         create: {
             method: (...resolvedArgs) => {
                 return reduce(componentNames, (res, name, index) => {
                     assign(res, {
                         [name]: resolvedArgs[index]
+                    });
+                    assign(res, {
+                        destroy
                     })
                     return res;
                 }, {})
