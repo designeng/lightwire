@@ -25,7 +25,9 @@ export default function createContext(spec) {
             return vertices[name];
         } else {
             vertices[name] = new GraphVertex(name);
-            vertices[name].method = spec[name].create.method;
+            if(spec[name].create && spec[name].create.method) {
+                vertices[name].method = spec[name].create.method;
+            }
             return vertices[name];
         }
     }
@@ -45,13 +47,15 @@ export default function createContext(spec) {
 
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
-        let { method, args } = componentDef.create;
-        assign(res, {
-            [name] : {
-                method,
-                args
-            }
-        });
+        if(componentDef.create) {
+            let { method, args } = componentDef.create;
+            assign(res, {
+                [name] : {
+                    method,
+                    args
+                }
+            });
+        }
         return res;
     }, {});
 
