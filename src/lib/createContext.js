@@ -99,7 +99,7 @@ export default function createContext(spec) {
         })
         return res;
     }, {}).then(context => {
-        console.log('Context created :::', context);
+        return context;
     }).catch(err => {
         console.log('ERROR', err);
     })
