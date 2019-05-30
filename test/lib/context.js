@@ -72,6 +72,10 @@ describe('Create context from spec', async () => {
     });
 
     it('context should have e component with value', () => {
+        expect(context.D).to.equal('D');
+    });
+
+    it('context should have e component with value', () => {
         expect(context.B).to.equal('B');
     });
 
