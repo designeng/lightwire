@@ -9,7 +9,9 @@ const Promise = when.promise;
 import Graph from '../graph/Graph';
 import GraphVertex from '../graph/GraphVertex';
 import GraphEdge from '../graph/GraphEdge';
+
 import depthFirstSearch from '../graph/algorithms/depthFirstSearch';
+import detectDirectedCycle from '../graph/algorithms/detectDirectedCycle';
 
 function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
@@ -73,36 +75,41 @@ export default function createContext(spec) {
         })
     });
 
-    const promises = [];
-    const namesInResolvingOrder = [];
+    let cycles = detectDirectedCycle(digraph);
+    if(!cycles) {
+        const promises = [];
+        const namesInResolvingOrder = [];
 
-    const leaveVertexCallback = (v) => {
-        let { currentVertex } = v;
-        let { value } = currentVertex;
-        let name = value;
+        const leaveVertexCallback = (v) => {
+            let { currentVertex } = v;
+            let { value } = currentVertex;
+            let name = value;
 
-        namesInResolvingOrder.push(name);
+            namesInResolvingOrder.push(name);
 
-        if(currentVertex.hasOwnProperty('method')) {
-            meld.around(components[name], 'method', aroundOriginalMethod);
+            if(currentVertex.hasOwnProperty('method')) {
+                meld.around(components[name], 'method', aroundOriginalMethod);
 
-            let originalArgs = components[name].args;
-            argumentsSubstitutions[name] = components[name].method(originalArgs);
+                let originalArgs = components[name].args;
+                argumentsSubstitutions[name] = components[name].method(originalArgs);
 
-            promises.push(argumentsSubstitutions[name]);
+                promises.push(argumentsSubstitutions[name]);
+            }
         }
-    }
 
-    depthFirstSearch(digraph, vertices['A'], {
-        leaveVertex: leaveVertexCallback,
-    })
-
-    return when.reduce(promises, (res, resolved, index) => {
-        assign(res, {
-            [namesInResolvingOrder[index]] : resolved
+        depthFirstSearch(digraph, vertices['A'], {
+            leaveVertex: leaveVertexCallback,
         })
-        return res;
-    }, {}).then(context => {
-        return context;
-    })
+
+        return when.reduce(promises, (res, resolved, index) => {
+            assign(res, {
+                [namesInResolvingOrder[index]] : resolved
+            })
+            return res;
+        }, {}).then(context => {
+            return context;
+        })
+    } else {
+        throw new Error('Cycles detected')
+    }
 }
