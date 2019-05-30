@@ -1,9 +1,11 @@
 import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
-import when, { Promise } from 'when';
+import when from 'when';
 import { msleep } from 'sleep';
 
 import createContext from '../src/lib/createContext';
+
+const Promise = when.promise;
 
 const spec = {
     A: {
