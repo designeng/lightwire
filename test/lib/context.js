@@ -64,7 +64,7 @@ describe('Create context from spec', async () => {
     });
 
     it('context should be object', () => {
-        expect(spec).to.be.an('object');
+        expect(context).to.be.an('object');
     });
 
     it('context should have c component with value', () => {
