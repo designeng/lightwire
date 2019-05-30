@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import when from 'when';
 import { msleep } from 'sleep';
 
-import createContext from '../src/lib/createContext';
+import createContext from '../../src/lib/createContext';
 
 const Promise = when.promise;
 
@@ -54,18 +54,21 @@ const spec = {
 
 describe('Create context from spec', async () => {
     let context;
-    try {
-        context = await createContext(spec);
-    } catch (error) {
-        console.log('ERROR:' , error);
-    }
+
+    before(async function() {
+        try {
+            context = await createContext(spec);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
 
     it('context should be object', () => {
-        expect(context).to.be.an('object');
+        expect(spec).to.be.an('object');
     });
 
     it('context should have c component with value', () => {
-        expect(context.C).to.equal('C');
+        expect(context.C).to.equal('CD');
     });
 
     it('context should have e component with value', () => {

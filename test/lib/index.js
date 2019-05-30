@@ -13,7 +13,7 @@ const addSyncTestFiles = (dirs) => {
                 let arr = file.split('.');
                 let name = _.first(arr);
                 return _.last(arr) === 'js'
-                    && _.indexOf(['runner', 'index'], name) == -1;
+                    && _.indexOf(['runner', 'index'], name) == -1
             })
             .forEach(file => mocha.addFile(path.join(dir, file)));
     });
@@ -23,7 +23,7 @@ addSyncTestFiles([
     __dirname
 ]);
 
-mocha.run((failures) => {
+mocha.run(function(failures) {
     process.exitCode = failures ? 1 : 0;
     process.exit();
 });

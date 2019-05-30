@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./runner",
-    "test": "node ./test/runner"
+    "test": "node ./test/lib/runner"
   },
   "keywords": [
     "application composition",
