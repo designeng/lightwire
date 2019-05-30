@@ -100,7 +100,5 @@ export default function createContext(spec) {
         return res;
     }, {}).then(context => {
         return context;
-    }).catch(err => {
-        console.log('ERROR', err);
     })
 }
