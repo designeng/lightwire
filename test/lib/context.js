@@ -95,6 +95,5 @@ describe('Create context from spec', async () => {
 
     it('context should have destroy method', () => {
         expect(context.destroy).to.be.a('function');
-        context.destroy();
     });
 });
