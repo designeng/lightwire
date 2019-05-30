@@ -24,7 +24,7 @@ const spec = {
         create: {
             method: (a) => Promise(resolve => {
                 msleep(10);
-                resolve('A');
+                resolve(a);
             }),
             args: [
                 {$ref: 'A'}
