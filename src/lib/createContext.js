@@ -5,7 +5,7 @@ import when from 'when';
 import meld from 'meld';
 
 const Promise = when.promise;
-const HEAD = '____HEAD____';
+export const HEAD = '____HEAD____';
 
 import Graph from '../graph/Graph';
 import GraphVertex from '../graph/GraphVertex';
@@ -18,10 +18,16 @@ function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
+export function createReservedNameErrorMessage(name) {
+    return `Component with name '${name}' is reserved and not permitted`
+}
+
 export default function createContext(originalSpec) {
-    if(originalSpec.hasOwnProperty(HEAD)) {
-        throw new Error(`Component with name ${HEAD} is reserved and not permitted`);
-    }
+    [HEAD, 'destroy'].map(name => {
+        if(originalSpec.hasOwnProperty(name)) {
+            throw new Error(createReservedNameErrorMessage(name));
+        }
+    });
 
     const spec = clone(originalSpec);
 
