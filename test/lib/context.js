@@ -23,7 +23,7 @@ const spec = {
 
     B: {
         create: {
-            method: (d) => Promise(resolve => {
+            method: () => Promise(resolve => {
                 msleep(10);
                 resolve('B');
             }),
