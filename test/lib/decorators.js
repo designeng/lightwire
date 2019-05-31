@@ -45,7 +45,38 @@ describe('Use args decorator for component definition', async () => {
         expect(context).to.be.an('object');
     });
 
-    it('context should have a component with value', () => {
+    it('context should have A component with value', () => {
         expect(context.A).to.equal('CBD');
+    });
+});
+
+const specsToMerge = [{
+    @args()
+    C: () => `C`
+}, {
+    @args({$ref: 'B'}, {$ref: 'C'})
+    A: (b, c) => `A_${b}_${c}`
+}, {
+    @args()
+    B: () => `B`
+}]
+
+describe('Should create context from specs array', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext(specsToMerge);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
+    });
+
+    it('context should have A component with value', () => {
+        expect(context.A).to.equal('A_B_C');
     });
 });
