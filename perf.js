@@ -3,7 +3,7 @@ import when from 'when';
 import createContext from './src/lib/createContext';
 import args from './src/decorators/args';
 
-const toMb = (n) => n / 1024 / 1024;
+const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
 
 const spec = {
     @args({$ref: 'someDep'})
@@ -41,7 +41,7 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 10000,
+        index => index >= 100000,
         runContextCreation,
         0
     );
