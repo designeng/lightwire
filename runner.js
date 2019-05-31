@@ -1,3 +1,2 @@
 require('./starter');
-// require('./src/lib/createContext');
-require('./test/smokeTest').default();
+require('./perf').default();
