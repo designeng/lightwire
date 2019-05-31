@@ -1,2 +1,0 @@
-require('../../starter');
-require('./index');
