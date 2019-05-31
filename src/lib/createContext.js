@@ -69,9 +69,6 @@ export default function createContext(originalSpec) {
             return vertices[name];
         } else {
             vertices[name] = new GraphVertex(name);
-            if(spec[name].create && spec[name].create.method) {
-                vertices[name].method = spec[name].create.method;
-            }
             return vertices[name];
         }
     }
@@ -97,6 +94,12 @@ export default function createContext(originalSpec) {
                 [name] : {
                     method,
                     args
+                }
+            });
+        } else {
+            assign(res, {
+                [name] : {
+                    method: () => spec[name]
                 }
             });
         }
@@ -129,14 +132,12 @@ export default function createContext(originalSpec) {
 
             namesInResolvingOrder.push(name);
 
-            if(currentVertex.hasOwnProperty('method')) {
-                meld.around(components[name], 'method', aroundOriginalMethod);
+            meld.around(components[name], 'method', aroundOriginalMethod);
 
-                let originalArgs = components[name].args;
-                argumentsSubstitutions[name] = components[name].method(originalArgs);
+            let originalArgs = components[name].args;
+            argumentsSubstitutions[name] = components[name].method(originalArgs);
 
-                promises.push(argumentsSubstitutions[name]);
-            }
+            promises.push(argumentsSubstitutions[name]);
         }
 
         depthFirstSearch(digraph, vertices[HEAD], {
