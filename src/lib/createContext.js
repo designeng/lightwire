@@ -25,6 +25,8 @@ export function createReservedNameErrorMessage(name) {
 }
 
 export default function createContext(originalSpec) {
+    const aopRemovers = [];
+
     /* merge specs if array provided */
     let mergedSpecs;
     if(isArray(originalSpec)) {
@@ -55,6 +57,7 @@ export default function createContext(originalSpec) {
         for(let prop in this) {
             delete this[prop];
         }
+        forEach(aopRemovers, (remover) => remover.remove());
     }
     destroy.bind(spec);
 
@@ -152,7 +155,8 @@ export default function createContext(originalSpec) {
 
             namesInResolvingOrder.push(name);
 
-            meld.around(components[name], 'method', aroundOriginalMethod);
+            let remover = meld.around(components[name], 'method', aroundOriginalMethod);
+            aopRemovers.push(remover);
 
             let originalArgs = components[name].args;
             argumentsSubstitutions[name] = components[name].method(originalArgs);
