@@ -143,3 +143,37 @@ describe('Detect cycles', async () => {
         expect(errors[0]).to.equal('Cycles detected');
     });
 });
+
+const specWithNotFoundRef = {
+    A: {
+        create: {
+            method: (b) => Promise(resolve => {
+                msleep(10);
+                resolve(b);
+            }),
+            args: [
+                {$ref: 'B'}
+            ]
+        }
+    }
+}
+
+describe('Throw error if ref not found', async () => {
+    let context, errors = [];
+
+    before(async function() {
+        try {
+            context = await createContext(specWithNotFoundRef);
+        } catch (error) {
+            errors.push(error.message);
+        }
+    });
+
+    it('should throw error', () => {
+        expect(errors.length).to.equal(1);
+    });
+
+    it('should throw error with message', () => {
+        expect(errors[0]).to.equal(`No component with name B`);
+    });
+});

@@ -114,7 +114,12 @@ export default function createContext(originalSpec) {
 
         forEach(args, (arg, index) => {
             if(arg.hasOwnProperty('$ref')) {
-                let vertexTo = createOrGetVertex(arg.$ref);
+                let name = arg.$ref;
+                if(!components.hasOwnProperty(name)) {
+                    throw new Error(`No component with name ${name}`)
+                }
+
+                let vertexTo = createOrGetVertex(name);
                 digraph.addEdge(new GraphEdge(vertexFrom, vertexTo));
             }
         })
