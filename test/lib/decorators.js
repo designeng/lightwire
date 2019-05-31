@@ -9,10 +9,10 @@ import args from '../../src/decorators/args';
 const Promise = when.promise;
 
 const spec = {
-    @args({$ref: 'C'}, {$ref: 'B'})
-    A: (c, b) => Promise(resolve => {
+    @args({$ref: 'C'}, {$ref: 'B'}, {$ref: 'D'})
+    A: (c, b, d) => Promise(resolve => {
         msleep(10);
-        resolve(c + b);
+        resolve(c + b + d);
     }),
 
     @args()
@@ -26,6 +26,8 @@ const spec = {
         msleep(10);
         resolve('C');
     }),
+
+    D: 'D'
 }
 
 describe('Use args decorator for component definition', async () => {
@@ -44,6 +46,6 @@ describe('Use args decorator for component definition', async () => {
     });
 
     it('context should have a component with value', () => {
-        expect(context.A).to.equal('CB');
+        expect(context.A).to.equal('CBD');
     });
 });
