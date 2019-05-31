@@ -69,7 +69,7 @@ describe('Create context from spec', async () => {
         }
     });
 
-    it('context should be object', () => {
+    it('context should be an object', () => {
         expect(context).to.be.an('object');
     });
 
