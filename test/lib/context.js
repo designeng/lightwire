@@ -98,83 +98,35 @@ describe('Create context from spec', async () => {
     });
 });
 
-const specWithCycles = {
-    A: {
-        create: {
-            method: (b) => Promise(resolve => {
-                msleep(10);
-                resolve(b);
-            }),
-            args: [
-                {$ref: 'B'}
-            ]
-        }
-    },
-
-    B: {
-        create: {
-            method: (a) => Promise(resolve => {
-                msleep(10);
-                resolve(a);
-            }),
-            args: [
-                {$ref: 'A'}
-            ]
-        }
-    }
-}
-
-describe('Detect cycles', async () => {
-    let context, errors = [];
+describe('Should create context from empty spec', async () => {
+    let context;
 
     before(async function() {
         try {
-            context = await createContext(specWithCycles);
+            context = await createContext({});
         } catch (error) {
-            errors.push(error.message);
+            console.log('ERROR:' , error);
         }
     });
 
-    it('should throw error', () => {
-        expect(errors.length).to.equal(1);
-    });
-
-    it('should throw error with message', () => {
-        expect(errors[0]).to.equal('Cycles detected');
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
     });
 });
 
-const specWithNotFoundRef = {
-    A: {
-        create: {
-            method: (b) => Promise(resolve => {
-                msleep(10);
-                resolve(b);
-            }),
-            args: [
-                {$ref: 'B'}
-            ]
-        }
-    }
-}
-
-describe('Throw error if ref not found', async () => {
-    let context, errors = [];
+describe('Should create context from specs array', async () => {
+    let context;
 
     before(async function() {
         try {
-            context = await createContext(specWithNotFoundRef);
+            context = await createContext([{}, {}]);
         } catch (error) {
-            errors.push(error.message);
+            console.log('ERROR:' , error);
         }
     });
 
-    it('should throw error', () => {
-        expect(errors.length).to.equal(1);
-    });
-
-    it('should throw error with message', () => {
-        expect(errors[0]).to.equal(`No component with name B`);
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
     });
 });
 
