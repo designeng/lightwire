@@ -1,10 +1,12 @@
 import polyfill from '@babel/polyfill';
 
-import { map, forEach, reduce, assign, flatten, clone, isArray } from 'lodash';
+import { map, forEach, reduce, assign, flatten, clone, isArray, isObject } from 'lodash';
 import when from 'when';
 import meld from 'meld';
 
 const Promise = when.promise;
+
+export const NOT_VALID_SPEC_ERROR_MESSAGE = 'Specification in createContext should be object or array of objects';
 export const HEAD = '____HEAD____';
 
 import Graph from '../graph/Graph';
@@ -32,6 +34,8 @@ export default function createContext(originalSpec) {
             }
             return res;
         }, {});
+    } else if(!isObject(originalSpec)) {
+        throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
     }
 
     [HEAD, 'destroy'].map(name => {
