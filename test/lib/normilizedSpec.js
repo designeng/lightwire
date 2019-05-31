@@ -26,7 +26,7 @@ const spec = {
     C: ['C']
 }
 
-xdescribe('Normalize spec components before wiring', async () => {
+describe('Normalize spec components before wiring', async () => {
     let context;
 
     before(async function() {
@@ -37,11 +37,11 @@ xdescribe('Normalize spec components before wiring', async () => {
         }
     });
 
-    it('context should be object', () => {
+    it('context should be an object', () => {
         expect(context).to.be.an('object');
     });
 
-    it('context should have c component with value', () => {
+    it('context should have A component with value', () => {
         expect(context.A).to.equal('BC');
     });
 });
