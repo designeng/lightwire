@@ -10,20 +10,25 @@ const Promise = when.promise;
 const spec = {
     A: {
         create: {
-            method: (b, c) => Promise(resolve => {
+            method: (b, c, { someField }) => Promise(resolve => {
                 msleep(10);
-                resolve(b + c[0]);
+                resolve(b + c[0] + someField);
             }),
             args: [
                 {$ref: 'B'},
-                {$ref: 'C'}
+                {$ref: 'C'},
+                {$ref: 'D'},
             ]
         }
     },
 
     B: 'B',
 
-    C: ['C']
+    C: ['C'],
+
+    D: {
+        someField: '_D_field'
+    }
 }
 
 describe('Normalize spec components before wiring', async () => {
@@ -42,6 +47,6 @@ describe('Normalize spec components before wiring', async () => {
     });
 
     it('context should have A component with value', () => {
-        expect(context.A).to.equal('BC');
+        expect(context.A).to.equal('BC_D_field');
     });
 });
