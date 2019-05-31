@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import when from 'when';
 import { msleep } from 'sleep';
 
-import createContext from '../../src/lib/createContext';
+import createContext, { NOT_VALID_SPEC_ERROR_MESSAGE } from '../../src/lib/createContext';
 
 const Promise = when.promise;
 
@@ -175,5 +175,25 @@ describe('Throw error if ref not found', async () => {
 
     it('should throw error with message', () => {
         expect(errors[0]).to.equal(`No component with name B`);
+    });
+});
+
+describe('Throw error if provided spec is not valid', async () => {
+    let context, errors = [];
+
+    before(async function() {
+        try {
+            context = await createContext('someNotValidSpec');
+        } catch (error) {
+            errors.push(error.message);
+        }
+    });
+
+    it('should throw error', () => {
+        expect(errors.length).to.equal(1);
+    });
+
+    it('should throw error with message', () => {
+        expect(errors[0]).to.equal(NOT_VALID_SPEC_ERROR_MESSAGE);
     });
 });
