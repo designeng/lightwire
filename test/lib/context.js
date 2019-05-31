@@ -97,3 +97,49 @@ describe('Create context from spec', async () => {
         expect(context.destroy).to.be.a('function');
     });
 });
+
+const specWithCycles = {
+    A: {
+        create: {
+            method: (b) => Promise(resolve => {
+                msleep(10);
+                resolve(b);
+            }),
+            args: [
+                {$ref: 'B'}
+            ]
+        }
+    },
+
+    B: {
+        create: {
+            method: (a) => Promise(resolve => {
+                msleep(10);
+                resolve(a);
+            }),
+            args: [
+                {$ref: 'A'}
+            ]
+        }
+    }
+}
+
+describe('Detect cycles', async () => {
+    let context, errors = [];
+
+    before(async function() {
+        try {
+            context = await createContext(specWithCycles);
+        } catch (error) {
+            errors.push(error.message);
+        }
+    });
+
+    it('should throw error', () => {
+        expect(errors.length).to.equal(1);
+    });
+
+    it('should throw error with message', () => {
+        expect(errors[0]).to.equal('Cycles detected');
+    });
+});
