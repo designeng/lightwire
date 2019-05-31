@@ -1,6 +1,6 @@
 import polyfill from '@babel/polyfill';
 
-import { map, forEach, reduce, assign, flatten, clone } from 'lodash';
+import { map, forEach, reduce, assign, flatten, clone, isArray } from 'lodash';
 import when from 'when';
 import meld from 'meld';
 
@@ -23,13 +23,24 @@ export function createReservedNameErrorMessage(name) {
 }
 
 export default function createContext(originalSpec) {
+    /* merge specs if array provided */
+    let mergedSpecs;
+    if(isArray(originalSpec)) {
+        mergedSpecs = reduce(originalSpec, (res, spec) => {
+            for(let component in spec) {
+                assign(res, {[component]: spec[component]});
+            }
+            return res;
+        }, {});
+    }
+
     [HEAD, 'destroy'].map(name => {
         if(originalSpec.hasOwnProperty(name)) {
             throw new Error(createReservedNameErrorMessage(name));
         }
     });
 
-    const spec = clone(originalSpec);
+    const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
 
     /* create additional vertex connected with all others */
     let componentNames = Object.keys(spec);
