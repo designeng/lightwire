@@ -1,7 +1,9 @@
 import fs from 'fs';
 import { template } from 'lodash';
 import when from 'when';
+import express from 'express';
 import { exec } from 'child_process';
+import { promisify } from 'util';
 import createContext from '../src/lib/createContext';
 import args from '../src/decorators/args';
 
@@ -29,6 +31,7 @@ export default async function main() {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
 
                 memoryRes.push({
+                    time: Math.floor(new Date().getTime() / 1000),
                     rss: toMb(rss),
                     heapTotal: toMb(heapTotal),
                     heapUsed: toMb(heapUsed),
@@ -43,17 +46,33 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 100000,
+        index => index >= 10,
         runContextCreation,
         0
-    );
+    ).then(() => {
+        /* generage report and open in browser */
 
-    /* TODO: generage report and open in browser */
-    let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
+        let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
+        let heapProfileScript = fs.readFileSync(__dirname + '/heapProfile.js', 'utf-8');
 
-    let compiled = template(tpl, { 'memory': memoryRes });
-    // console.log(compiled.source);
+        let compiled = template(tpl);
 
+        let app = express();
 
-    console.table(memoryRes);
+        app.get('/', function (req, res) {
+            res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+            res.end(compiled({ 'memory': JSON.stringify(memoryRes) }));
+        });
+
+        app.get('/heapProfile.js', function (req, res) {
+            res.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+            res.end(heapProfileScript);
+        });
+
+        app.listen(3000, function () {
+            console.log('Open http://localhost:3000');
+        });
+
+        console.table(memoryRes);
+    })
 }
