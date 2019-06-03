@@ -41,6 +41,8 @@ let memoryData = memory.map((item) => {
     }
 });
 
+console.log('memoryData', memoryData);
+
 var svg = d3.select('svg')
     .attr('width', WIDTH + MARGIN.left + MARGIN.right)
     .attr('height', HEIGHT + MARGIN.top + MARGIN.bottom)
