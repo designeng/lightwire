@@ -9,7 +9,10 @@
     <body>
         <div id="app"></div>
     </body>
-    <script>var memory = <%= memory %>;</script>
+    <script>
+        var memory = JSON.parse('<%= memory %>');
+        console.log(memory);
+    </script>
     <script src="heapProfile.js"></script>
 </body>
 </html>
