@@ -4,14 +4,16 @@
     <title>Memory Usage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 </head>
 <body>
     <body>
-        <div id="app"></div>
+        <svg v-else width='960' height='500'></svg>
     </body>
     <script>
         var memory = JSON.parse('<%= memory %>');
-        console.log(memory);
+        var start = memory[0].time;
+        var end = memory[memory.length - 1].time;
     </script>
     <script src="heapProfile.js"></script>
 </body>
