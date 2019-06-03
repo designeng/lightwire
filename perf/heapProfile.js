@@ -3,10 +3,14 @@ const HEAP_RSS_COLOR ='orange';
 const HEAP_TOTAL_COLOR ='#69b3a2';
 const HEAP_USED_COLOR ='red';
 
+const WIDTH = 960;
+const HEIGHT = 500;
+const MARGIN = {top: 10, right: 30, bottom: 30, left: 60};
+
 const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
 
-var memoryValues = samples.map(item => {
-    var { rss, heapTotal, heapUsed, external } = item.memory;
+var memoryValues = memory.map(item => {
+    var { rss, heapTotal, heapUsed, external } = item;
     return [rss, heapTotal, heapUsed, external];
 });
 
@@ -27,36 +31,37 @@ yRange = yRange.map(item => toMb(item))
 
 var xRangeStartEnd = [start, end];
 
-memoryData = samples.map((item) => {
+let memoryData = memory.map((item) => {
     return {
         time: item.time,
-        rss: toMb(item.memory.rss),
-        heapTotal: toMb(item.memory.heapTotal),
-        heapUsed: toMb(item.memory.heapUsed),
+        rss: toMb(item.rss),
+        heapTotal: toMb(item.heapTotal),
+        heapUsed: toMb(item.heapUsed),
+        external: toMb(item.external)
     }
 });
 
 var svg = d3.select('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
+    .attr('width', WIDTH + MARGIN.left + MARGIN.right)
+    .attr('height', HEIGHT + MARGIN.top + MARGIN.bottom)
     .append('g')
     .attr('transform',
-        'translate(' + margin.left + ',' + margin.top + ')');
+        'translate(' + MARGIN.left + ',' + MARGIN.top + ')');
 
 /* Init X axis */
 var x = d3.scaleTime()
     .domain(xRangeStartEnd)
-    .range([ 0, width ]);
+    .range([ 0, WIDTH ]);
 
 svg.append('g')
-    .attr('transform', 'translate(0,' + height + ')')
+    .attr('transform', 'translate(0,' + HEIGHT + ')')
     .call(d3.axisBottom(x)
 );
 
 /* Init Y axis */
 var y = d3.scaleLinear()
     .domain(yRange)
-    .range([ height, 0 ]);
+    .range([ HEIGHT, 0 ]);
 
 svg.append('g')
     .call(d3.axisLeft(y));
