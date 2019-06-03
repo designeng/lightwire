@@ -7,7 +7,6 @@ const WIDTH = 960;
 const HEIGHT = 500;
 const MARGIN = {top: 10, right: 30, bottom: 30, left: 60};
 
-// const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
 const toMb = (n) => Number((n / 1024 / 1024));
 
 var memoryValues = memory.map(item => {
