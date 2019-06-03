@@ -1,2 +1,3 @@
 require('./starter');
-require('./perf').default();
+// require('./perf/lightwireBenchmark').default();
+require('./perf/wireBenchmark').default();

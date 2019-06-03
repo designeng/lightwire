@@ -1,0 +1,5 @@
+.npmignore
+.gitignore
+.babelrc
+node_modules
+perf
