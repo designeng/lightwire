@@ -1,7 +1,7 @@
 import { assign } from 'lodash';
 import when from 'when';
-import createContext from './src/lib/createContext';
-import args from './src/decorators/args';
+import createContext from '../src/lib/createContext';
+import args from '../src/decorators/args';
 
 const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
 
