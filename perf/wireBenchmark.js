@@ -11,6 +11,7 @@ import runExpressServer from './utils/runExpressServer';
 import { CYCLES_COUNT, SAMPLE_PERIOD } from './config';
 
 export default async function main() {
+    let start = getTime();
     let memory = [];
     const runContextCreation = (index) => {
         return wire(wireSpec).then(context => {
@@ -41,5 +42,7 @@ export default async function main() {
     ).then(() => {
         /* generage report and open in browser */
         runExpressServer(memory);
+        let end = getTime();
+        console.log('Seconds:', end - start);
     })
 }
