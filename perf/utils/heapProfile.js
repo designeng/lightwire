@@ -33,7 +33,6 @@ yRange = yRange.map(item => toMb(item))
 var xRange = [start, end];
 
 let memoryData = memory.map(({ time, rss, heapTotal, heapUsed, external }) => {
-    console.log('item...', time, rss, heapTotal, heapUsed, external);
     return {
         time,
         rss: toMb(rss),
