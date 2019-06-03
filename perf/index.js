@@ -46,7 +46,7 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 10,
+        index => index >= 10000,
         runContextCreation,
         0
     ).then(() => {
