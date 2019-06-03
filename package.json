@@ -1,11 +1,12 @@
 {
   "name": "lightwire",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "dist/lightwire",
   "scripts": {
     "start": "node ./runner",
-    "test": "node ./test/runner"
+    "test": "node ./test/runner",
+    "build": "rollup ./src/createContext --file ./dist/bundle.js --format cjs"
   },
   "keywords": [
     "application composition",
@@ -32,11 +33,11 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
-    "babel-loader": "^8.0.5",
     "chai": "^4.2.0",
+    "essential-wire": "git://github.com/designeng/essential-wire.git#0.1",
     "express": "^4.17.1",
     "mocha": "^6.1.4",
-    "sleep": "^6.1.0",
-    "essential-wire": "git://github.com/designeng/essential-wire.git#0.1"
+    "rollup": "^1.13.1",
+    "sleep": "^6.1.0"
   }
 }
