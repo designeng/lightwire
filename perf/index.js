@@ -71,6 +71,7 @@ export default async function main() {
 
         app.listen(3000, function () {
             console.log('Open http://localhost:3000');
+            exec('open -a "Google Chrome" http://localhost:3000');
         });
 
         console.table(memoryRes);
