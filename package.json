@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git://github.com/designeng/lightwire"
   },
-  "author": "",
+  "author": "Denis Savenok <denissavenok@gmail.com> (http://designeng.github.io/)",
   "license": "ISC",
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
