@@ -19,7 +19,7 @@ const spec = {
     @args({$ref: 'someDep'})
     someComponent: (d) => {
         let arr = []
-        for (var i = 0; i < 1000; i++) {
+        for (var i = 0; i < 1000000; i++) {
             arr.push(`${i}_${d}`);
         }
         return arr;
@@ -53,14 +53,13 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 50,
+        index => index >= 100,
         runContextCreation,
         0
     ).then(() => {
         /* generage report and open in browser */
 
         let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
-        let heapProfileScript = fs.readFileSync(__dirname + '/heapProfile.js', 'utf-8');
 
         let compiled = template(tpl);
 
@@ -75,8 +74,10 @@ export default async function main() {
         });
 
         app.get('/heapProfile.js', function (req, res) {
-            res.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
-            res.end(heapProfileScript);
+            fs.readFile(__dirname + '/heapProfile.js', 'utf-8', (error, heapProfileScript) => {
+                res.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
+                res.end(heapProfileScript);
+            });
         });
 
         app.listen(3000, function () {
