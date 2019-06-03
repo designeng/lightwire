@@ -1,10 +1,9 @@
 import fs from 'fs';
-import { assign } from 'lodash';
+import { template } from 'lodash';
 import when from 'when';
+import { exec } from 'child_process';
 import createContext from '../src/lib/createContext';
 import args from '../src/decorators/args';
-
-let template = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
 
 const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
 
@@ -48,6 +47,13 @@ export default async function main() {
         runContextCreation,
         0
     );
+
+    /* TODO: generage report and open in browser */
+    let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
+
+    let compiled = template(tpl, { 'memory': memoryRes });
+    // console.log(compiled.source);
+
 
     console.table(memoryRes);
 }
