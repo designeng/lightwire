@@ -10,7 +10,7 @@ import args from '../src/decorators/args';
 const Promise = when.promise;
 
 const waitALittle = () => Promise(resolve => {
-    setTimeout(resolve, 100);
+    setTimeout(resolve, 1);
 })
 
 const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
@@ -19,7 +19,7 @@ const spec = {
     @args({$ref: 'someDep'})
     someComponent: (d) => {
         let arr = []
-        for (var i = 0; i < 10000000; i++) {
+        for (var i = 0; i < 10; i++) {
             arr.push(`${i}_${d}`);
         }
         return arr;
@@ -33,7 +33,7 @@ export default async function main() {
     let memoryRes = [];
     const runContextCreation = (index) => {
         return createContext(spec).then(context => {
-            if(index % 5 === 0) {
+            if(index % 200 === 0) {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
 
                 memoryRes.push({
@@ -43,6 +43,7 @@ export default async function main() {
                     heapUsed: toMb(heapUsed),
                     external: toMb(external)
                 });
+                console.log(index);
             }
 
             return when(waitALittle()).then(() => context.destroy());
@@ -53,7 +54,7 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 100,
+        index => index >= 10000,
         runContextCreation,
         0
     ).then(() => {
