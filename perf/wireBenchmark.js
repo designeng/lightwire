@@ -5,17 +5,20 @@ import wire from 'essential-wire';
 
 import wireSpec from './specs/wire';
 import waitALittle from './utils/waitALittle';
+import getTime from './utils/getTime';
 import runExpressServer from './utils/runExpressServer';
+
+import { CYCLES_COUNT, SAMPLE_PERIOD } from './config';
 
 export default async function main() {
     let memory = [];
     const runContextCreation = (index) => {
         return wire(wireSpec).then(context => {
-            if(index % 200 === 0) {
+            if(index % SAMPLE_PERIOD === 0) {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
 
                 memory.push({
-                    time: Math.floor(new Date().getTime() / 1000),
+                    time: getTime(),
                     rss,
                     heapTotal,
                     heapUsed,
@@ -32,7 +35,7 @@ export default async function main() {
 
     await when.iterate(
         index => index + 1,
-        index => index >= 10000,
+        index => index >= CYCLES_COUNT,
         runContextCreation,
         0
     ).then(() => {
