@@ -9,7 +9,7 @@ import args from '../src/decorators/args';
 
 const Promise = when.promise;
 
-const waitOneSecond = () => Promise(resolve => {
+const waitALittle = () => Promise(resolve => {
     setTimeout(resolve, 100);
 })
 
@@ -19,7 +19,7 @@ const spec = {
     @args({$ref: 'someDep'})
     someComponent: (d) => {
         let arr = []
-        for (var i = 0; i < 1000000; i++) {
+        for (var i = 0; i < 10000000; i++) {
             arr.push(`${i}_${d}`);
         }
         return arr;
@@ -45,7 +45,7 @@ export default async function main() {
                 });
             }
 
-            return when(waitOneSecond()).then(() => context.destroy());
+            return when(waitALittle()).then(() => context.destroy());
         }).catch(err => {
             console.error('Error in context creation');
         })
