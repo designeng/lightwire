@@ -1,47 +1,25 @@
-import fs from 'fs';
-import { template } from 'lodash';
+import polyfill from '@babel/polyfill'; /* for async/await support */
+
 import when from 'when';
-import express from 'express';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import createContext from '../src/lib/createContext';
-import args from '../src/decorators/args';
 
-const Promise = when.promise;
-
-const waitALittle = () => Promise(resolve => {
-    setTimeout(resolve, 1);
-})
-
-const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
-
-const spec = {
-    @args({$ref: 'someDep'})
-    someComponent: (d) => {
-        let arr = []
-        for (var i = 0; i < 10; i++) {
-            arr.push(`${i}_${d}`);
-        }
-        return arr;
-    },
-
-    @args()
-    someDep: () => 'someDep'
-}
+import lightwireSpec from './specs/lightwire';
+import waitALittle from './utils/waitALittle';
+import runExpressServer from './utils/runExpressServer';
 
 export default async function main() {
-    let memoryRes = [];
+    let memory = [];
     const runContextCreation = (index) => {
-        return createContext(spec).then(context => {
+        return createContext(lightwireSpec).then(context => {
             if(index % 200 === 0) {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
 
-                memoryRes.push({
+                memory.push({
                     time: Math.floor(new Date().getTime() / 1000),
-                    rss: toMb(rss),
-                    heapTotal: toMb(heapTotal),
-                    heapUsed: toMb(heapUsed),
-                    external: toMb(external)
+                    rss,
+                    heapTotal,
+                    heapUsed,
+                    external
                 });
                 console.log(index);
             }
@@ -59,33 +37,6 @@ export default async function main() {
         0
     ).then(() => {
         /* generage report and open in browser */
-
-        let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
-
-        let compiled = template(tpl);
-
-        let app = express();
-
-        app.get('/', function (req, res) {
-            res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
-            res.end(compiled({
-                memory: JSON.stringify(memoryRes),
-                noCache: new Date().getTime()
-            }));
-        });
-
-        app.get('/heapProfile.js', function (req, res) {
-            fs.readFile(__dirname + '/heapProfile.js', 'utf-8', (error, heapProfileScript) => {
-                res.writeHead(200, {'Content-Type': 'application/javascript; charset=utf-8'});
-                res.end(heapProfileScript);
-            });
-        });
-
-        app.listen(3000, function () {
-            console.log('Open http://localhost:3000');
-            exec('open -a "Google Chrome" http://localhost:3000');
-        });
-
-        console.table(memoryRes);
+        runExpressServer(memory);
     })
 }
