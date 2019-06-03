@@ -7,7 +7,8 @@ const WIDTH = 960;
 const HEIGHT = 500;
 const MARGIN = {top: 10, right: 30, bottom: 30, left: 60};
 
-const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
+// const toMb = (n) => Number((n / 1024 / 1024).toFixed(2));
+const toMb = (n) => Number((n / 1024 / 1024));
 
 var memoryValues = memory.map(item => {
     var { rss, heapTotal, heapUsed, external } = item;
@@ -29,15 +30,16 @@ yRange = yRange.map(item => toMb(item))
     moment.unix(end).format('YYYY/MM/DD HH:mm:ss')
 ];
 
-var xRangeStartEnd = [start, end];
+var xRange = [start, end];
 
-let memoryData = memory.map((item) => {
+let memoryData = memory.map(({ time, rss, heapTotal, heapUsed, external }) => {
+    console.log('item...', time, rss, heapTotal, heapUsed, external);
     return {
-        time: item.time,
-        rss: toMb(item.rss),
-        heapTotal: toMb(item.heapTotal),
-        heapUsed: toMb(item.heapUsed),
-        external: toMb(item.external)
+        time,
+        rss: toMb(rss),
+        heapTotal: toMb(heapTotal),
+        heapUsed: toMb(heapUsed),
+        external: toMb(external)
     }
 });
 
@@ -52,13 +54,12 @@ var svg = d3.select('svg')
 
 /* Init X axis */
 var x = d3.scaleTime()
-    .domain(xRangeStartEnd)
+    .domain(xRange)
     .range([ 0, WIDTH ]);
 
 svg.append('g')
     .attr('transform', 'translate(0,' + HEIGHT + ')')
-    .call(d3.axisBottom(x)
-);
+    .call(d3.axisBottom(x));
 
 /* Init Y axis */
 var y = d3.scaleLinear()
