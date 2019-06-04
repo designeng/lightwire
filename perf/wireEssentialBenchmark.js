@@ -15,6 +15,9 @@ export default async function main() {
     let memory = [];
     const runContextCreation = (index) => {
         return wire(wireSpec).then(context => {
+            if(index % 1000 === 0) {
+                console.log(index);
+            }
             if(index % SAMPLE_PERIOD === 0) {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
 
@@ -25,12 +28,11 @@ export default async function main() {
                     heapUsed,
                     external
                 });
-                console.log(index);
             }
 
-            // return when(waitALittle()).then(() => context.destroy());
+            return when(waitALittle()).then(() => context.destroy());
 
-            return context.destroy();
+            // return context.destroy();
         }).catch(err => {
             console.error('Error in context creation');
         })
