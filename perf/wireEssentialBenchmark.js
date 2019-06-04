@@ -4,9 +4,9 @@ import when from 'when';
 import wire from 'essential-wire';
 
 import wireSpec from './specs/wire';
-import waitALittle from './utils/waitALittle';
-import getTime from './utils/getTime';
-import runExpressServer from './utils/runExpressServer';
+import waitALittle from './lib/waitALittle';
+import getTime from './lib/getTime';
+import runExpressServer from './lib/runExpressServer';
 
 import { CYCLES_COUNT, SAMPLE_PERIOD } from './config';
 

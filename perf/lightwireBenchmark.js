@@ -4,9 +4,9 @@ import when from 'when';
 import createContext from '../src/lib/createContext';
 
 import lightwireSpec from './specs/lightwire';
-import waitALittle from './utils/waitALittle';
-import getTime from './utils/getTime';
-import runExpressServer from './utils/runExpressServer';
+import waitALittle from './lib/waitALittle';
+import getTime from './lib/getTime';
+import runExpressServer from './lib/runExpressServer';
 import { CYCLES_COUNT, SAMPLE_PERIOD } from './config';
 
 export default async function main() {
