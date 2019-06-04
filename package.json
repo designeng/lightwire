@@ -38,6 +38,7 @@
     "express": "^4.17.1",
     "mocha": "^6.1.4",
     "rollup": "^1.13.1",
-    "sleep": "^6.1.0"
+    "sleep": "^6.1.0",
+    "wire": "git://github.com/cujojs/wire#0.10.11"
   }
 }
