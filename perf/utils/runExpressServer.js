@@ -3,6 +3,8 @@ import { exec } from 'child_process';
 import { template } from 'lodash';
 import express from 'express';
 
+import { CYCLES_COUNT } from '../config';
+
 export default function runExpressServer(perfName, memory, seconds) {
     let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
 
@@ -16,6 +18,7 @@ export default function runExpressServer(perfName, memory, seconds) {
             perfName,
             memory: JSON.stringify(memory),
             seconds,
+            cyclesCount: CYCLES_COUNT,
             noCache: new Date().getTime()
         }));
     });
