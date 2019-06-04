@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import { template } from 'lodash';
 import express from 'express';
 
-export default function runExpressServer(memory) {
+export default function runExpressServer(perfName, memory, seconds) {
     let tpl = fs.readFileSync(__dirname + '/heapProfile.html', 'utf-8');
 
     let compiled = template(tpl);
@@ -13,7 +13,9 @@ export default function runExpressServer(memory) {
     app.get('/', function (req, res) {
         res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
         res.end(compiled({
+            perfName,
             memory: JSON.stringify(memory),
+            seconds,
             noCache: new Date().getTime()
         }));
     });
