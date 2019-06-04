@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./perf/runner",
     "test": "node ./test/runner",
-    "build": "rollup ./src/createContext --file ./dist/lightwire.js --format cjs"
+    "build": "rollup -c"
   },
   "keywords": [
     "application composition",
