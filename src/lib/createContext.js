@@ -52,7 +52,6 @@ export default function createContext(originalSpec) {
     let componentNames = Object.keys(spec);
     let headArgs = map(componentNames, (name) => ({$ref: name}))
 
-    /* create destroy method (?) */
     const destroy = function() {
         for(let prop in this) {
             delete this[prop];
