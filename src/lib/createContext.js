@@ -52,7 +52,11 @@ export default function createContext(originalSpec) {
 
     const destroy = function() {
         for(let prop in this) {
-            delete this[prop];
+            if(this[prop].hasOwnProperty('destroy')) {
+                when(this[prop].destroy()).then(() => delete this[prop])
+            } else {
+                delete this[prop];
+            }
         }
         forEach(aopRemovers, (remover) => remover.remove());
     }
