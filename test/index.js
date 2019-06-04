@@ -1,4 +1,3 @@
-import polyfill from '@babel/polyfill'; /* for async/await support */
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
