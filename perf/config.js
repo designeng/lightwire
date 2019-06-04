@@ -1,2 +1,2 @@
-export const SAMPLE_PERIOD = 200;
-export const CYCLES_COUNT = 10000;
+export const SAMPLE_PERIOD = 100;
+export const CYCLES_COUNT = 500000;
