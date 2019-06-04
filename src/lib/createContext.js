@@ -103,7 +103,7 @@ export default function createContext(originalSpec) {
 
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
-        if(componentDef.create) {
+        if(componentDef && componentDef.create) {
             let { module, args } = componentDef.create;
             assign(res, {
                 [name] : {
