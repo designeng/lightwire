@@ -24,10 +24,12 @@ export default async function main() {
                     heapUsed,
                     external
                 });
-                console.log(index);
             }
 
-            return when(waitALittle()).then(() => context.destroy());
+            /* TODO: with waitALittle pause no memory leaks? */
+            // return when(waitALittle()).then(() => context.destroy());
+
+            return context.destroy();
         }).catch(err => {
             console.error('Error in context creation');
         })
@@ -40,8 +42,7 @@ export default async function main() {
         0
     ).then(() => {
         /* generage report and open in browser */
-        runExpressServer(memory);
         let end = getTime();
-        console.log('Seconds:', end - start);
+        runExpressServer('lightwire', memory, end - start);
     })
 }
