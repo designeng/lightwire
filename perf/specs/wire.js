@@ -2,7 +2,7 @@ export default {
     someComponent: {
         create: {
             module: (d) => {
-                let arr = []
+                let arr = [];
                 for (var i = 0; i < 10; i++) {
                     arr.push(`${i}_${d}`);
                 }
