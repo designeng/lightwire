@@ -10,7 +10,7 @@ const Promise = when.promise;
 const spec = {
     A: {
         create: {
-            method: (c, b) => Promise(resolve => {
+            module: (c, b) => Promise(resolve => {
                 msleep(10);
                 resolve(c + b);
             }),
@@ -23,7 +23,7 @@ const spec = {
 
     B: {
         create: {
-            method: () => Promise(resolve => {
+            module: () => Promise(resolve => {
                 msleep(10);
                 resolve('B');
             }),
@@ -32,7 +32,7 @@ const spec = {
 
     C: {
         create: {
-            method: (d) => Promise(resolve => {
+            module: (d) => Promise(resolve => {
                 msleep(10);
                 resolve('C' + d);
             }),
@@ -44,7 +44,7 @@ const spec = {
 
     D: {
         create: {
-            method: () => Promise(resolve => {
+            module: () => Promise(resolve => {
                 msleep(100);
                 resolve('D');
             })
@@ -53,7 +53,7 @@ const spec = {
 
     F: {
         create: {
-            method: () => 'F'
+            module: () => 'F'
         }
     }
 }

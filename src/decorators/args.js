@@ -3,7 +3,7 @@ export default function args(...config) {
         return {
             value: {
                 create: {
-                    method: target[name],
+                    module: target[name],
                     args: config
                 }
             }

@@ -62,7 +62,7 @@ export default function createContext(originalSpec) {
 
     spec[HEAD] = {
         create: {
-            method: (...resolvedArgs) => {
+            module: (...resolvedArgs) => {
                 return reduce(componentNames, (res, name, index) => {
                     assign(res, {
                         [name]: resolvedArgs[index]
@@ -90,7 +90,7 @@ export default function createContext(originalSpec) {
         }
     }
 
-    const aroundOriginalMethod = (joinpoint) => {
+    const aroundOriginal = (joinpoint) => {
         let { args, proceed } = joinpoint;
 
         let newArgs = flatten(args).map((arg) => {
@@ -106,17 +106,17 @@ export default function createContext(originalSpec) {
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
         if(componentDef.create) {
-            let { method, args } = componentDef.create;
+            let { module, args } = componentDef.create;
             assign(res, {
                 [name] : {
-                    method,
+                    module,
                     args
                 }
             });
         } else {
             assign(res, {
                 [name] : {
-                    method: () => spec[name]
+                    module: () => spec[name]
                 }
             });
         }
@@ -154,11 +154,11 @@ export default function createContext(originalSpec) {
 
             namesInResolvingOrder.push(name);
 
-            let remover = meld.around(components[name], 'method', aroundOriginalMethod);
+            let remover = meld.around(components[name], 'module', aroundOriginal);
             aopRemovers.push(remover);
 
             let originalArgs = components[name].args;
-            argumentsSubstitutions[name] = components[name].method(originalArgs);
+            argumentsSubstitutions[name] = components[name].module(originalArgs);
 
             promises.push(argumentsSubstitutions[name]);
         }

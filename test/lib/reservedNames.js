@@ -12,7 +12,7 @@ forEach([HEAD, 'destroy'], name => {
         let spec = {
             [name]: {
                 create: {
-                    method: noop
+                    module: noop
                 }
             }
         }

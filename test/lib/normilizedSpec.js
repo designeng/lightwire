@@ -10,7 +10,7 @@ const Promise = when.promise;
 const spec = {
     A: {
         create: {
-            method: (b, c, { someField }) => Promise(resolve => {
+            module: (b, c, { someField }) => Promise(resolve => {
                 msleep(10);
                 resolve(b + c[0] + someField);
             }),
