@@ -1,5 +1,3 @@
-import polyfill from '@babel/polyfill';
-
 import { map, forEach, reduce, assign, flatten, clone, isArray, isObject } from 'lodash';
 import when from 'when';
 import meld from 'meld';
