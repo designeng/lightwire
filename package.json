@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./runner",
     "test": "node ./test/runner",
-    "build": "rollup ./src/createContext --file ./dist/bundle.js --format cjs"
+    "build": "rollup ./src/createContext --file ./dist/lightwire.js --format cjs"
   },
   "keywords": [
     "application composition",
