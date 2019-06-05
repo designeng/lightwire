@@ -142,7 +142,7 @@ export default function createContext(originalSpec) {
         let vertexFrom = createOrGetVertex(name);
 
         forEach(args, (arg, index) => {
-            if(arg.hasOwnProperty('$ref')) {
+            if(isObject(arg) && arg.hasOwnProperty('$ref')) {
                 let name = arg.$ref;
                 if(!components.hasOwnProperty(name)) {
                     throw new Error(`No component with name ${name}`)
