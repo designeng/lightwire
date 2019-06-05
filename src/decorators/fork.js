@@ -32,7 +32,10 @@ export default function forkDecorator(...config) {
                         pathStr
                     ]
                 },
-                destroy: () => closeOpenedProcesses(),
+                destroy: () => {
+                    console.log('INVOKED DESTROY METHOD');
+                    return closeOpenedProcesses()
+                },
                 error: () => closeOpenedProcesses()
             }
         }
