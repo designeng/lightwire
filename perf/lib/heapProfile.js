@@ -93,3 +93,28 @@ svg.append('path')
     .attr('d', d3.line()
         .x((d) => x(d.time))
         .y((d) => y(d.rss)))
+
+svg.append('g')
+    .attr('class', 'grid')
+    .attr('transform', 'translate(0,' + HEIGHT + ')')
+    .call(make_x_gridlines()
+        .tickSize(- HEIGHT)
+        .tickFormat('')
+    )
+
+svg.append('g')
+    .attr('class', 'grid')
+    .call(make_y_gridlines()
+        .tickSize(- WIDTH)
+        .tickFormat('')
+    )
+
+function make_x_gridlines() {
+    return d3.axisBottom(x)
+        .ticks(5)
+}
+
+function make_y_gridlines() {
+    return d3.axisLeft(y)
+        .ticks(10)
+}
