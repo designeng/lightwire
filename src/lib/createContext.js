@@ -1,4 +1,4 @@
-import { map, forEach, reduce, assign, flatten, clone, isFunction, isArray, isObject } from 'lodash';
+import { map, forEach, reduce, assign, flatten, clone, isFunction, isArray, isObject, isNil } from 'lodash';
 import when from 'when';
 import sequence from 'when/sequence';
 import meld from 'meld';
@@ -55,7 +55,7 @@ export default function createContext(originalSpec) {
 
     const destroy = function() {
         for(let prop in this) {
-            if(this[prop].hasOwnProperty('destroy')) {
+            if(!isNil(this[prop]) && this[prop].hasOwnProperty('destroy')) {
                 when(this[prop].destroy()).then(() => delete this[prop])
             } else {
                 delete this[prop];
