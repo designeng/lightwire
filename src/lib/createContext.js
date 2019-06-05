@@ -1,5 +1,6 @@
-import { map, forEach, reduce, assign, flatten, clone, isArray, isObject } from 'lodash';
+import { map, forEach, reduce, assign, flatten, clone, isFunction, isArray, isObject } from 'lodash';
 import when from 'when';
+import sequence from 'when/sequence';
 import meld from 'meld';
 
 const Promise = when.promise;
@@ -24,6 +25,8 @@ export function createReservedNameErrorMessage(name) {
 
 export default function createContext(originalSpec) {
     const aopRemovers = [];
+    const namesInResolvingOrder = [];
+    const destroyers = [];
 
     /* merge specs if array provided */
     let mergedSpecs;
@@ -59,6 +62,10 @@ export default function createContext(originalSpec) {
             }
         }
         forEach(aopRemovers, (remover) => remover.remove());
+        for (var i = 0; i < namesInResolvingOrder.length; i++) {
+            delete namesInResolvingOrder[i];
+        }
+        return sequence(destroyers);
     }
     destroy.bind(spec);
 
@@ -107,6 +114,9 @@ export default function createContext(originalSpec) {
 
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
+        if(componentDef && componentDef.destroy && isFunction(componentDef.destroy)) {
+            destroyers.push(componentDef.destroy);
+        }
         if(componentDef && componentDef.create) {
             let { module, args } = componentDef.create;
             assign(res, {
@@ -147,7 +157,6 @@ export default function createContext(originalSpec) {
     let cycles = detectDirectedCycle(digraph);
     if(!cycles) {
         const promises = [];
-        const namesInResolvingOrder = [];
 
         const leaveVertexCallback = (v) => {
             let { currentVertex } = v;
