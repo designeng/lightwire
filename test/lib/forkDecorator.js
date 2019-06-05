@@ -51,7 +51,6 @@ describe('Create context with fork decorator', async () => {
     after(async function() {
         try {
             await context.destroy();
-            let pids = await pidtreeP(process.pid);
         } catch (error) {
             console.log('ERROR on destroy:' , error);
         }
