@@ -138,6 +138,46 @@ describe('Should create context from specs array', async () => {
     });
 });
 
+describe('Should create context from null & undefined components with null & undefined arguments', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext({
+                A: null,
+                B: undefined,
+                C: {
+                    create: {
+                        module: (x, y) => `${x}_${y}`,
+                        args: [
+                            null,
+                            undefined
+                        ]
+                    }
+                }
+            });
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
+    });
+
+    it('A component should be equal null', () => {
+        expect(context.A).to.equal(null);
+    });
+
+    it('B component should be equal undefined', () => {
+        expect(context.B).to.equal(undefined);
+    });
+
+    it('C component should be string', () => {
+        expect(context.C).to.equal('null_undefined');
+    });
+});
+
 describe('Throw error if provided spec is not valid', async () => {
     let context, errors = [];
 
