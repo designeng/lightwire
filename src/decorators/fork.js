@@ -33,7 +33,6 @@ export default function forkDecorator(...config) {
                     ]
                 },
                 destroy: () => {
-                    console.log('INVOKED DESTROY METHOD');
                     return closeOpenedProcesses()
                 },
                 error: () => closeOpenedProcesses()
