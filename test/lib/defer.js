@@ -25,6 +25,11 @@ const secondSpec = {
     })
 }
 
+const zeroSpec = {
+    @args({$ref: 'environment'})
+    zero: (environment) => 'zero_' + environment.url
+}
+
 const spec = {
     @args()
     environment: () => ({
@@ -35,6 +40,9 @@ const spec = {
     environmentAnother: () => ({
         type: 'crud'
     }),
+
+    @defer(zeroSpec)
+    zeroDeferredComponent: {},
 
     @defer(
         [firstSpec, secondSpec],
@@ -60,6 +68,14 @@ describe('Create context with deferred component', async () => {
 
     it('context A component should be an object', () => {
         expect(context.A).to.be.an('object');
+    });
+
+    it('context zeroDeferredComponent component should be a function', () => {
+        expect(context.zeroDeferredComponent).to.be.a('function');
+    });
+
+    it('context deferredComponent component should be a function', () => {
+        expect(context.deferredComponent).to.be.a('function');
     });
 
     it('context A component should have field first', () => {
