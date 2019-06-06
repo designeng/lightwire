@@ -15,7 +15,7 @@ import GraphEdge from '../graph/GraphEdge';
 import depthFirstSearch from '../graph/algorithms/depthFirstSearch';
 import detectDirectedCycle from '../graph/algorithms/detectDirectedCycle';
 
-function isRef(arg) {
+export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
