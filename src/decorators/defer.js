@@ -1,8 +1,9 @@
 import createContext, { isRef } from '../lib/createContext';
-import { reduce, assign, union } from 'lodash';
+import { isArray, reduce, assign, union } from 'lodash';
 
 export default function defer(specs, ...provide) {
     return (target, name, description) => {
+        const _specs = isArray(specs) ? specs : [specs]; /* normalize */
         return {
             value: {
                 create: {
@@ -15,7 +16,7 @@ export default function defer(specs, ...provide) {
                             }
                             return res;
                         }, {});
-                        let mergedSpecs = specs.concat(provideSpec);
+                        let mergedSpecs = _specs.concat(provideSpec);
                         const callback = () => createContext(mergedSpecs);
                         return callback;
                     },
