@@ -18,15 +18,29 @@ const firstSpec = {
 }
 
 const secondSpec = {
-    @args()
-    second: () => Promise(resolve => {
+    @args({$ref: 'environment'})
+    second: (environment) => Promise(resolve => {
         msleep(10);
-        resolve(`second`);
+        resolve(`second_` + environment.url);
     })
 }
 
 const spec = {
-    @defer([firstSpec, secondSpec])
+    @args()
+    environment: () => ({
+        url: 'http://example.com'
+    }),
+
+    @args()
+    environmentAnother: () => ({
+        type: 'crud'
+    }),
+
+    @defer(
+        [firstSpec, secondSpec],
+        {$ref: 'environment'},
+        {$ref: 'environmentAnother'}
+    )
     deferredComponent: {},
 
     @args({$ref: 'deferredComponent'})
@@ -53,7 +67,7 @@ describe('Create context with deferred component', async () => {
     });
 
     it('context A component should have field second', () => {
-        expect(context.A.second).to.equal('second');
+        expect(context.A.second).to.equal('second_http://example.com');
     });
 
     it('context A component should have destroy method', () => {
