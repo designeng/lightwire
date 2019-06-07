@@ -6,6 +6,7 @@ import meld from 'meld';
 const Promise = when.promise;
 
 export const NOT_VALID_SPEC_ERROR_MESSAGE = 'Specification in createContext should be object or array of objects';
+export const NULL_OR_UNDEFINED_HAS_NO_PROPERTY = 'Injected object is null or undefined. Ref does not corresponds to injected object property';
 export const HEAD = '____HEAD____';
 
 import Graph from '../graph/Graph';
@@ -21,6 +22,16 @@ export function isRef(arg) {
 
 export function createReservedNameErrorMessage(name) {
     return `Component with name '${name}' is reserved and not permitted`
+}
+
+const getBaseInjectedObject = (arg) => {
+    let arr = arg.$ref.split(DOT);
+    return {$ref: arr[0]};;
+}
+
+const getInjectedObjectProp = (arg) => {
+    let arr = arg.$ref.split(DOT);
+    return arr[1];
 }
 
 export default function createContext(originalSpec) {
@@ -102,6 +113,17 @@ export default function createContext(originalSpec) {
     const aroundOriginal = (joinpoint) => {
         let { args, proceed } = joinpoint;
 
+        let argsProps = {};
+
+        let injectedArgs = map(args, (arg, index) => {
+            if(isRef(arg) && arg.$ref.indexOf(DOT) != -1) {
+                argsProps[index] = getInjectedObjectProp(arg);
+                return getBaseInjectedObject(arg);
+            } else {
+                return arg;
+            }
+        });
+
         let newArgs = flatten(args).map((arg) => {
             if(isRef(arg)) {
                 return argumentsSubstitutions[arg.$ref];
@@ -109,7 +131,20 @@ export default function createContext(originalSpec) {
                 return arg;
             }
         });
-        return when.map(newArgs).then(args => proceed.apply(null, args));
+
+        return when.map(newArgs).then(resolved => {
+            let resArgs = reduce(resolved, (res, arg, index) => {
+                if(argsProps[index]) {
+                    if(isNil(arg)) throw new Error(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
+                    res.push(arg[argsProps[index]]);
+                } else {
+                    res.push(arg);
+                }
+                return res;
+            }, []);
+
+            proceed.apply(null, resArgs)
+        });
     }
 
     let components = reduce(entries, (res, item) => {
