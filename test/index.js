@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Mocha from 'mocha';
 
 const mocha = new Mocha();
+import { NULL_OR_UNDEFINED_HAS_NO_PROPERTY } from '../src/decorators/args';
 
 const addSyncTestFiles = (dirs) => {
     _.forEach(dirs, dir => {
@@ -25,4 +26,10 @@ addSyncTestFiles([
 mocha.run(function(failures) {
     process.exitCode = failures ? 1 : 0;
     process.exit();
+});
+
+process.on('unhandledRejection', (error, promise) => {
+    if(error.message.match(new RegExp(NULL_OR_UNDEFINED_HAS_NO_PROPERTY))) {
+        /* do nothing */
+    }
 });
