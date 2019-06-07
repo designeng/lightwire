@@ -22,6 +22,7 @@ export default function injectJson(specs, ...provide) {
                         }, {});
                         let mergedSpecs = _specs.concat(provideSpec);
                         return when(createContext(mergedSpecs)).then(ctx => {
+                            process.nextTick(() => ctx.destroy())
                             if(ctx.response) {
                                 return ctx.response.json;
                             } else {
