@@ -142,3 +142,44 @@ describe('Throw error if no prop correspondent to $ref in injected object', asyn
         expect(errors[0]).to.equal(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
     });
 });
+
+
+const specWithResponse = {
+    @args()
+    __env: () => ({
+        requestUrl: 'someUrl',
+        requestPath: 'somePath',
+        isMobile: true
+    }),
+
+    @args(
+        {$ref: '__env.requestUrl'},
+        {$ref: '__env.requestPath'},
+        {$ref: '__env.isMobile'},
+    )
+    response: (requestUrl, requestPath, isMobile) => {
+        return {
+            html: requestUrl + ' ' + requestPath + ' ' + isMobile
+        }
+    }
+}
+
+describe('Should create context with response & environment', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext(specWithResponse);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context response should be an object', () => {
+        expect(context.response).to.be.an('object');
+    });
+
+    it('context response should have value', () => {
+        expect(context.response.html).to.equal('someUrl somePath true');
+    });
+});
