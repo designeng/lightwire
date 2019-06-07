@@ -4,6 +4,7 @@ import { isArray, reduce, assign, union } from 'lodash';
 export default function defer(specs, ...provide) {
     return (target, name, description) => {
         const _specs = isArray(specs) ? specs : [specs]; /* normalize */
+
         return {
             value: {
                 create: {
