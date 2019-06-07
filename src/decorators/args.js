@@ -1,5 +1,6 @@
-import { map, reduce } from 'lodash';
+import { map, reduce, isNil } from 'lodash';
 
+export const NULL_OR_UNDEFINED_HAS_NO_PROPERTY = 'Injected object is null or undefined. Ref does not corresponds to injected object property';
 const DOT = '.';
 function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
@@ -35,6 +36,7 @@ export default function args(...args) {
                     module: (...resolved) => {
                         let resArgs = reduce(resolved, (res, arg, index) => {
                             if(argsProps[index]) {
+                                if(isNil(arg)) throw new Error(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
                                 res.push(arg[argsProps[index]]);
                             } else {
                                 res.push(arg);
