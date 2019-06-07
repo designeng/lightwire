@@ -80,3 +80,37 @@ describe('Should create context from specs array', async () => {
         expect(context.A).to.equal('A_B_C');
     });
 });
+
+const specWithDotInRef = {
+    @args()
+    environment: () => ({
+        data: 'some_str'
+    }),
+
+    @args({$ref: 'environment.data'})
+    first: (data) => `first_${data}`
+}
+
+describe('Access to injected object fields by dot', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext(specWithDotInRef);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context A should have component with value', () => {
+        expect(context.first).to.equal('first_some_str');
+    });
+
+    after(async function() {
+        try {
+            context.destroy();
+        } catch (error) {
+            console.log('ERROR on destroy:' , error);
+        }
+    });
+});
