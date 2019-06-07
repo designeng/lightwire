@@ -4,7 +4,7 @@ import when from 'when';
 import { msleep } from 'sleep';
 
 import createContext from '../../src/lib/createContext';
-import args from '../../src/decorators/args';
+import args, { NULL_OR_UNDEFINED_HAS_NO_PROPERTY } from '../../src/decorators/args';
 
 const Promise = when.promise;
 
@@ -112,5 +112,33 @@ describe('Access to injected object fields by dot', async () => {
         } catch (error) {
             console.log('ERROR on destroy:' , error);
         }
+    });
+});
+
+const specWithNoPropInInjectedObject = {
+    @args()
+    environment: () => null,
+
+    @args({$ref: 'environment.prop'})
+    first: (data) => `first_${prop}`
+}
+
+describe('Throw error if no prop correspondent to $ref in injected object', async () => {
+    let context, errors = [];
+
+    before(async function() {
+        try {
+            context = await createContext(specWithNoPropInInjectedObject);
+        } catch (error) {
+            errors.push(error.message);
+        }
+    });
+
+    it('should throw error', () => {
+        expect(errors.length).to.equal(1);
+    });
+
+    it('should throw error with message', () => {
+        expect(errors[0]).to.equal(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
     });
 });
