@@ -137,6 +137,8 @@ export default function createContext(originalSpec) {
 
     const digraph = new Graph(true);
 
+    const addedKeys = {};
+
     forEach(components, (component, name) => {
         let { args } = component;
         let vertexFrom = createOrGetVertex(name);
@@ -149,7 +151,14 @@ export default function createContext(originalSpec) {
                 }
 
                 let vertexTo = createOrGetVertex(name);
-                digraph.addEdge(new GraphEdge(vertexFrom, vertexTo));
+
+
+                let edge = new GraphEdge(vertexFrom, vertexTo);
+                let edgeKey = edge.getKey();
+                if(!addedKeys[edgeKey]) {
+                    digraph.addEdge(edge);
+                    addedKeys[edgeKey] = 1;
+                }
             }
         })
     });
