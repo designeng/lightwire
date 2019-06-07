@@ -15,12 +15,24 @@ import GraphEdge from '../graph/GraphEdge';
 import depthFirstSearch from '../graph/algorithms/depthFirstSearch';
 import detectDirectedCycle from '../graph/algorithms/detectDirectedCycle';
 
+const DOT = '.';
+
 export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
 export function createReservedNameErrorMessage(name) {
     return `Component with name '${name}' is reserved and not permitted`
+}
+
+export function getBaseInjectedObject(arg) {
+    let arr = arg.$ref.split(DOT);
+    return {$ref: arr[0]};;
+}
+
+export function getInjectedObjectProp(arg) {
+    let arr = arg.$ref.split(DOT);
+    return arr[1];
 }
 
 export default function createContext(originalSpec) {
@@ -99,18 +111,42 @@ export default function createContext(originalSpec) {
         }
     }
 
+    /* ----------------------------- aroundOriginal ---------------------------*/
     const aroundOriginal = (joinpoint) => {
         let { args, proceed } = joinpoint;
+        let argsProps = {};
+        let flattenedArgs = flatten(args);
 
-        let newArgs = flatten(args).map((arg) => {
+        let injectedArgs = map(flattenedArgs, (arg, index) => {
             if(isRef(arg)) {
-                return argumentsSubstitutions[arg.$ref];
+                let refString = arg.$ref;
+                if(refString.indexOf(DOT) != -1) {
+                    argsProps[index] = getInjectedObjectProp(arg);
+                    return argumentsSubstitutions[getBaseInjectedObject(arg)];
+                } else {
+                    return argumentsSubstitutions[refString];
+                }
             } else {
                 return arg;
             }
         });
-        return when.map(newArgs).then(args => proceed.apply(null, args));
+
+        return when.map(injectedArgs).then(resolved => {
+
+            let resultArgs = reduce(resolved, (res, arg, index) => {
+                if(argsProps[index]) {
+                    if(isNil(arg)) throw new Error(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
+                    res.push(arg[argsProps[index]]);
+                } else {
+                    res.push(arg);
+                }
+                return res;
+            }, []);
+
+            return proceed.apply(null, resultArgs)
+        });
     }
+    /* ---------------------------- /aroundOriginal ----------------------------*/
 
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
