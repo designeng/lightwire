@@ -1,5 +1,5 @@
 import meld from 'meld';
-import { map, reduce, isObject, isString, first } from 'lodash';
+import { map, reduce, forEach, isObject, isString, first } from 'lodash';
 
 const DOT = '.';
 
@@ -26,7 +26,6 @@ export default class ComponentModule {
     aroundAspect(joinpoint) {
         let { args, proceed } = joinpoint;
         let readyArguments = this.ready;
-
         let resolvedArgs = map(args, arg => {
             if(isRef(arg)) {
                 let refString = arg.$ref;
@@ -34,18 +33,26 @@ export default class ComponentModule {
                     let fragments = refString.split(DOT);
                     let firstFragment = fragments.shift();
                     let length = fragments.length;
-                    if(readyArguments.hasOwnProperty(firstFragment)) {
-                        let readyArg = reduce(fragments, (res, fragment) => {
-                            if(res.hasOwnProperty(fragment)) {
-                                res = res[fragment];
-                                return res;
-                            } else {
-                                throw new Error(`Can not resolve $ref ${refString}`);
-                            }
-                        }, readyArguments[firstFragment]);
-                        return readyArg;
+                    if(length > 0) {
+                        if(readyArguments.hasOwnProperty(firstFragment)) {
+                            let readyArg = reduce(fragments, (res, fragment) => {
+                                if(res.hasOwnProperty(fragment)) {
+                                    res = res[fragment];
+                                    return res;
+                                } else {
+                                    throw new Error(`Can not resolve $ref ${refString}`);
+                                }
+                            }, readyArguments[firstFragment]);
+                            return readyArg;
+                        } else {
+                            throw new Error(`Can not resolve $ref ${refString}`);
+                        }
                     } else {
-                        throw new Error(`Can not resolve $ref ${refString}`);
+                        if(readyArguments.hasOwnProperty(firstFragment)) {
+                            return readyArguments[firstFragment];
+                        } else {
+                            throw new Error(`Can not resolve $ref ${refString}`);
+                        }
                     }
                 } else {
                     return this.ready[refString];
@@ -55,11 +62,15 @@ export default class ComponentModule {
             }
         });
 
-        proceed.apply(null, resolvedArgs);
+        return proceed.apply(null, resolvedArgs);
     }
 
-    invoke (args) {
-        this.func(args);
+    invoke (...args) {
+        return this.func.apply(null, args);
+    }
+
+    destroy () {
+        forEach(this.removers, (r) => r.remove());
     }
 
 }
