@@ -5,9 +5,9 @@ const chai = require('chai');
 const sinonChai = require('sinon-chai');
 const sinon = require('sinon');
 
-import ComponentModule from '../../src/lib/ComponentModule';
-
 chai.use(sinonChai);
+
+import ComponentModule from '../../src/lib/ComponentModule';
 
 const ready = {
     one: 'ONE_VALUE',
