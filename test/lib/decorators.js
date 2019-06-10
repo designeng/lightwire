@@ -4,7 +4,7 @@ import when from 'when';
 import { msleep } from 'sleep';
 
 import createContext from '../../src/lib/createContext';
-import args, { NULL_OR_UNDEFINED_HAS_NO_PROPERTY } from '../../src/decorators/args';
+import args from '../../src/decorators/args';
 
 const Promise = when.promise;
 
@@ -139,7 +139,7 @@ describe('Throw error if no prop correspondent to $ref in injected object', asyn
     });
 
     it('should throw error with message', () => {
-        expect(errors[0]).to.equal(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
+        expect(errors[0]).to.be.ok;
     });
 });
 
