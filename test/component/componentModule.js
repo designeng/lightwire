@@ -1,4 +1,4 @@
-import { } from 'lodash';
+import { reduce } from 'lodash';
 import { expect } from 'chai';
 
 const chai = require('chai');
@@ -75,6 +75,38 @@ describe('ComponentModule invoke with complex $ref', () => {
     it('Instance two.prop1 should return value when invoked', () => {
         let res = componentModule.invoke({$ref: 'two.prop1'});
         expect(res).to.equal('PROP1_VALUE');
+    });
+
+    after(() => {
+        componentModule.destroy();
+        sinon.restore();
+    })
+});
+
+describe('ComponentModule invoke with several complex args', () => {
+    const func = (...args) => reduce(args, (res, x) => {
+        return res + x;
+    }, 0);
+
+    let componentModule, spy;
+
+    before(function() {
+        try {
+            componentModule = new ComponentModule(func, {a: 1, b: 2, c: {e: 4}, d: {f: {g: 5}}});
+            spy = sinon.spy(componentModule, 'func');
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('Instance should return value when invoked', () => {
+        let res = componentModule.invoke(
+            {$ref: 'a'},
+            {$ref: 'b'},
+            {$ref: 'c.e'},
+            {$ref: 'd.f.g'},
+        );
+        expect(res).to.equal(12);
     });
 
     after(() => {
