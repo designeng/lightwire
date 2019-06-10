@@ -7,6 +7,10 @@ import ComponentModule from './ComponentModule';
 
 const Promise = when.promise;
 
+function isPromise(x) {
+    return x instanceof Promise;
+}
+
 export const NOT_VALID_SPEC_ERROR_MESSAGE = 'Specification in createContext should be object or array of objects';
 export const HEAD = '____HEAD____';
 
@@ -30,7 +34,7 @@ export function createReservedNameErrorMessage(name) {
 export default function createContext(originalSpec) {
     const namesInResolvingOrder = [];
     const destroyers = [];
-    const ready = {};
+    let ready = {};
 
     /* merge specs if array provided */
     let mergedSpecs;
@@ -111,7 +115,6 @@ export default function createContext(originalSpec) {
             let { module, args } = componentDef.create;
             assign(res, {
                 [name] : {
-                    componentModule: new ComponentModule(module, ready),
                     module,
                     args
                 }
@@ -119,7 +122,6 @@ export default function createContext(originalSpec) {
         } else {
             assign(res, {
                 [name] : {
-                    componentModule: new ComponentModule(() => spec[name], ready),
                     module: () => spec[name]
                 }
             });
@@ -164,21 +166,21 @@ export default function createContext(originalSpec) {
             let { value } = currentVertex;
             let name = value;
 
+            let componentModule = new ComponentModule(components[name].module, ready);
+
+            let promise = componentModule.invoke.apply(componentModule, components[name].args);
+
+            ready[name] = promise;
             namesInResolvingOrder.push(name);
-
-            let componentModule = components[name].componentModule;
-
-            let result = componentModule.invoke.apply(componentModule, components[name].args);
-            ready[name] = result;
 
             componentModule.destroy();
 
-            promises.push(ready[name]);
+            promises.push(promise);
         }
 
         depthFirstSearch(digraph, vertices[HEAD], {
             leaveVertex: leaveVertexCallback,
-        })
+        });
 
         return when.reduce(promises, (res, resolved, index) => {
             assign(res, {
