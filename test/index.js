@@ -15,7 +15,20 @@ const addSyncTestFiles = (dirs) => {
                 return _.last(arr) === 'js'
                     && _.indexOf(['runner', 'index'], name) == -1
             })
-            .forEach(file => mocha.addFile(path.join(dir, file)));
+            // .forEach(file => {
+            //     mocha.addFile(path.join(dir, file))
+            // });
+            .forEach(file => {
+                let fragments = dir.split('/')
+                if(_.last(fragments) === 'component') {
+                    mocha.addFile(path.join(dir, file))
+                } else if(_.last(fragments) === 'lib' && [
+                    'simpleContext.js',
+                    // 'context.js'
+                ].indexOf(file) != -1){
+                    mocha.addFile(path.join(dir, file))
+                }
+            });
     });
 }
 
