@@ -27,6 +27,11 @@ export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
+const getBaseInjectedObject = (arg) => {
+    let arr = arg.$ref.split(DOT);
+    return arr[0];
+}
+
 export function createReservedNameErrorMessage(name) {
     return `Component with name '${name}' is reserved and not permitted`
 }
@@ -139,13 +144,21 @@ export default function createContext(originalSpec) {
 
         forEach(args, (arg, index) => {
             if(isRef(arg)) {
-                let name = arg.$ref;
+                let name;
+                let refString = arg.$ref;
+
+                if(refString.indexOf(DOT) != -1) {
+                    name = getBaseInjectedObject(arg);
+                    console.log('name.....', name);
+                } else {
+                    name = refString;
+                }
+
                 if(!components.hasOwnProperty(name)) {
                     throw new Error(`No component with name ${name}`)
                 }
 
                 let vertexTo = createOrGetVertex(name);
-
 
                 let edge = new GraphEdge(vertexFrom, vertexTo);
                 let edgeKey = edge.getKey();
