@@ -57,23 +57,23 @@ describe('ComponentModule invoke with complex $ref', () => {
         }
     });
 
-    it('Instance invoke called with resolved arg', () => {
-        componentModule.invoke({$ref: 'one'});
+    it('Instance invoke called with resolved arg', async () => {
+        await componentModule.invoke({$ref: 'one'});
         expect(spy.calledWith(ready.one)).to.be.ok;
     });
 
-    it('Instance invoke called with resolved arg', () => {
-        componentModule.invoke({$ref: 'two.prop1'});
+    it('Instance invoke called with resolved arg', async () => {
+        await componentModule.invoke({$ref: 'two.prop1'});
         expect(spy.calledWith(ready.two.prop1)).to.be.ok;
     });
 
-    it('Instance should return value when invoked', () => {
-        let res = componentModule.invoke({$ref: 'one'});
+    it('Instance should return value when invoked', async () => {
+        let res = await componentModule.invoke({$ref: 'one'});
         expect(res).to.equal('ONE_VALUE');
     });
 
-    it('Instance two.prop1 should return value when invoked', () => {
-        let res = componentModule.invoke({$ref: 'two.prop1'});
+    it('Instance two.prop1 should return value when invoked', async () => {
+        let res = await componentModule.invoke({$ref: 'two.prop1'});
         expect(res).to.equal('PROP1_VALUE');
     });
 
@@ -98,8 +98,8 @@ describe('ComponentModule invoke with several complex args', () => {
         }
     });
 
-    it('Instance should return value when invoked', () => {
-        let res = componentModule.invoke(
+    it('Instance should return value when invoked', async () => {
+        let res = await componentModule.invoke(
             {$ref: 'a'},
             {$ref: 'b'},
             {$ref: 'c.e'},
