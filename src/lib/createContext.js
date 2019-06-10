@@ -39,7 +39,7 @@ export function createReservedNameErrorMessage(name) {
 export default function createContext(originalSpec) {
     const namesInResolvingOrder = [];
     const destroyers = [];
-    let ready = {};
+    let argumentsSubstitutions = {};
 
     /* merge specs if array provided */
     let mergedSpecs;
@@ -178,11 +178,11 @@ export default function createContext(originalSpec) {
             let { value } = currentVertex;
             let name = value;
 
-            let componentModule = new ComponentModule(components[name].module, ready);
+            let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
 
             let promise = componentModule.invoke.apply(componentModule, components[name].args);
 
-            ready[name] = promise;
+            argumentsSubstitutions[name] = promise;
             namesInResolvingOrder.push(name);
 
             componentModule.destroy();
