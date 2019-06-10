@@ -131,8 +131,9 @@ export default class ComponentModule {
         });
 
         return when.map(argsToWait).then(resolvedArgs => {
-            /* для сложных ссылок arg тут может быть объектом, в который нужно углубиться,
-            чтобы получить искомое значение */
+            /* для сложных ссылок arg тут может быть объектом,
+            в котором в свою очередь содержатся вложенные объекты,
+            куда нужно углубиться, чтобы получить искомое значение */
             let newArgs = map(resolvedArgs, (arg, index) => {
                 if(complexArgs[index]) {
                     return diveIntoObjectByReferenceAndGetReferenceValue(arg, complexArgs[index]);
