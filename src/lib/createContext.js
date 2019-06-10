@@ -149,7 +149,6 @@ export default function createContext(originalSpec) {
 
                 if(refString.indexOf(DOT) != -1) {
                     name = getBaseInjectedObject(arg);
-                    console.log('name.....', name);
                 } else {
                     name = refString;
                 }
