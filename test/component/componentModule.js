@@ -44,7 +44,7 @@ describe('ComponentModule invoke', async () => {
 });
 
 describe('ComponentModule invoke with complex $ref', () => {
-    const func = (...args) => args[0]
+    const func = (x) => x;
 
     let componentModule, spy;
 
