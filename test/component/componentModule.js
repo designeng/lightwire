@@ -138,12 +138,12 @@ describe('ComponentModule invoke with complex $ref', () => {
         expect(spy.calledWith(argumentsSubstitutions.two.prop1)).to.be.ok;
     });
 
-    xit('Instance should return value when invoked', async () => {
+    it('Instance should return value when invoked', async () => {
         let res = await componentModule.invoke({$ref: 'one'});
         expect(res).to.equal('ONE_VALUE');
     });
 
-    xit('Instance two.prop1 should return value when invoked', async () => {
+    it('Instance two.prop1 should return value when invoked', async () => {
         let res = await componentModule.invoke({$ref: 'two.prop1'});
         expect(res).to.equal('PROP1_VALUE');
     });
@@ -169,7 +169,7 @@ describe('ComponentModule invoke with several complex args', () => {
         }
     });
 
-    xit('Instance should return value when invoked', async () => {
+    it('Instance should return value when invoked', async () => {
         let res = await componentModule.invoke(
             {$ref: 'a'},
             {$ref: 'b'},
