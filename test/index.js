@@ -4,7 +4,6 @@ import _ from 'lodash';
 import Mocha from 'mocha';
 
 const mocha = new Mocha();
-import { NULL_OR_UNDEFINED_HAS_NO_PROPERTY } from '../src/decorators/args';
 
 const addSyncTestFiles = (dirs) => {
     _.forEach(dirs, dir => {
