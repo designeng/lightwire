@@ -12,8 +12,47 @@ export function isComplexReference(arg) {
     return isRef(arg) && arg.$ref.indexOf(DOT) > 0;
 }
 
+/**
+ * @param {Array} args - массив аргументов
+ * @returns {Array} значение элемента массива null, если ссылка не сложная.
+ В противном случае значение элемента равно строке-пути до искомого поля.
+ Например, компонент a = {b: {c: 1}}. Полная ссылка: {$ref: 'a.b.c'}.
+ Но в строке-пути оставляется только путь к вложенному полю относительно данного объекта,
+ т.е. ссылка на сам объект (компонент) не нужна и в пути не хранится.
+ */
 export function getComplexReferences(args) {
-    return map(args, arg => isComplexReference(arg) ? 1 : 0)
+    return map(args, arg => {
+        if(isComplexReference(arg)) {
+            let fragments = arg.$ref.split(DOT);
+            fragments.shift(); /* здесь удаляем ссылку на сам компонент */
+            return fragments.join(DOT);
+        } else {
+            return null;
+        }
+    })
+}
+
+export function getBaseComponentReference(arg) {
+    let arr = arg.$ref.split(DOT);
+    return arr[0];
+}
+
+/**
+ * @param {Object} obj - исходный объект
+ * @param {String} $ref - ссылка на поле внутри, возможно, вложенного объекта. Из ссылки уже удален первый фрагмент,
+ соответствующий компоненту
+ * @returns {Any} значение поля
+ */
+export function diveIntoObjectByReferenceAndGetReferenceValue(obj, $ref) {
+    let fragments = $ref.split(DOT);
+    return reduce(fragments, (res, fragment) => {
+        if(res.hasOwnProperty(fragment)) {
+            res = res[fragment];
+            return res;
+        } else {
+            throw new Error(`Can not resolve $ref ${$ref}`);
+        }
+    }, obj);
 }
 
 export function findArgInArgumentSubstitutions(argumentsSubstitutions, arg) {
@@ -71,82 +110,37 @@ export default class ComponentModule {
 
     aroundAspect(joinpoint) {
         let { args, proceed } = joinpoint;
-        let argumentsSubstitutions = this.argumentsSubstitutions;
-        let complexArgs = isComplexReference(args);
 
-        let resolvedArgs = map(args, arg => {
+        /* у нас есть готовые компоненты для подстановки? */
+        let argumentsSubstitutions = this.argumentsSubstitutions;
+        let complexArgs = getComplexReferences(args);
+
+        /* возможно, некоторые из компонентов возвращают не "готовые" значения, а промисы */
+        let argsToWait = map(args, arg => {
             if(isRef(arg)) {
                 let refString = arg.$ref;
-                if(refString.indexOf(DOT) != -1) {
-                    let fragments = refString.split(DOT);
-                    let firstFragment = fragments.shift();
-                    let length = fragments.length;
-                    if(length > 0) {
-                        if(argumentsSubstitutions.hasOwnProperty(firstFragment)) {
-                            let readyArg = reduce(fragments, (res, fragment) => {
-                                if(res.hasOwnProperty(fragment)) {
-                                    res = res[fragment];
-                                    return res;
-                                } else {
-                                    throw new Error(`Can not resolve $ref ${refString}`);
-                                }
-                            }, argumentsSubstitutions[firstFragment]);
-                            return readyArg;
-                        } else {
-                            throw new Error(`Can not resolve $ref ${refString}`);
-                        }
-                    } else {
-                        if(argumentsSubstitutions.hasOwnProperty(firstFragment)) {
-                            return argumentsSubstitutions[firstFragment];
-                        } else {
-                            throw new Error(`Can not resolve $ref ${refString}`);
-                        }
-                    }
+                if(isComplexReference(arg)) {
+                    /* в случае "сложной" ссылки в массив аргументов подставляется корневой компонент */
+                    return argumentsSubstitutions[getBaseComponentReference(arg)];
                 } else {
-                    return this.argumentsSubstitutions[refString];
+                    return argumentsSubstitutions[refString];
                 }
             } else {
                 return arg;
             }
         });
 
-        return when.map(argumentsSubstitutions).then(resolvedArgs => {
+        return when.map(argsToWait).then(resolvedArgs => {
+            /* для сложных ссылок arg тут может быть объектом, в который нужно углубиться,
+            чтобы получить искомое значение */
             let newArgs = map(resolvedArgs, (arg, index) => {
-                if(isRef(arg)) {
-                    let refString = arg.$ref;
-                    if(refString.indexOf(DOT) != -1) {
-                        let fragments = refString.split(DOT);
-                        let firstFragment = fragments.shift();
-                        let length = fragments.length;
-                        if(length > 0) {
-                            if(argumentsSubstitutions.hasOwnProperty(firstFragment)) {
-                                let readyArg = reduce(fragments, (res, fragment) => {
-                                    if(res.hasOwnProperty(fragment)) {
-                                        res = res[fragment];
-                                        return res;
-                                    } else {
-                                        throw new Error(`Can not resolve $ref ${refString}`);
-                                    }
-                                }, argumentsSubstitutions[firstFragment]);
-                                return readyArg;
-                            } else {
-                                throw new Error(`Can not resolve $ref ${refString}`);
-                            }
-                        } else {
-                            if(argumentsSubstitutions.hasOwnProperty(firstFragment)) {
-                                return argumentsSubstitutions[firstFragment];
-                            } else {
-                                throw new Error(`Can not resolve $ref ${refString}`);
-                            }
-                        }
-                    } else {
-                        return this.argumentsSubstitutions[refString];
-                    }
+                if(complexArgs[index]) {
+                    return diveIntoObjectByReferenceAndGetReferenceValue(arg, complexArgs[index]);
                 } else {
                     return arg;
                 }
             });
-            return proceed.apply(null, resolvedArgs);
+            return proceed.apply(null, newArgs);
         })
     }
 
