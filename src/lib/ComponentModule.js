@@ -1,3 +1,4 @@
+import when from 'when';
 import meld from 'meld';
 import { map, reduce, forEach, isObject, isString, first } from 'lodash';
 
@@ -62,7 +63,7 @@ export default class ComponentModule {
             }
         });
 
-        return proceed.apply(null, resolvedArgs);
+        return when.map(resolvedArgs).then(args => proceed.apply(null, args));
     }
 
     invoke (...args) {
