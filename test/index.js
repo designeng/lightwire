@@ -20,7 +20,8 @@ const addSyncTestFiles = (dirs) => {
 }
 
 addSyncTestFiles([
-    __dirname + '/lib'
+    __dirname + '/component',
+    __dirname + '/lib',
 ]);
 
 mocha.run(function(failures) {
