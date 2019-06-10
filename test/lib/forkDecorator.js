@@ -24,7 +24,7 @@ const spec = {
     })
 }
 
-describe('Create context with fork decorator', async () => {
+describe('Fork decorator', async () => {
     let context;
 
     before(async function() {
