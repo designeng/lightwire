@@ -88,12 +88,11 @@ describe('ComponentModule invoke with several complex args', () => {
         return res + x;
     }, 0);
 
-    let componentModule, spy;
+    let componentModule;
 
     before(function() {
         try {
             componentModule = new ComponentModule(func, {a: 1, b: 2, c: {e: 4}, d: {f: {g: 5}}});
-            spy = sinon.spy(componentModule, 'func');
         } catch (error) {
             console.log('ERROR:' , error);
         }
@@ -104,13 +103,12 @@ describe('ComponentModule invoke with several complex args', () => {
             {$ref: 'a'},
             {$ref: 'b'},
             {$ref: 'c.e'},
-            {$ref: 'd.f.g'},
+            {$ref: 'd.f.g'}
         );
         expect(res).to.equal(12);
     });
 
     after(() => {
         componentModule.destroy();
-        sinon.restore();
     })
 });
