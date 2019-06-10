@@ -3,6 +3,8 @@ import when from 'when';
 import sequence from 'when/sequence';
 import meld from 'meld';
 
+import ComponentModule from './ComponentModule';
+
 const Promise = when.promise;
 
 export const NOT_VALID_SPEC_ERROR_MESSAGE = 'Specification in createContext should be object or array of objects';
@@ -25,20 +27,10 @@ export function createReservedNameErrorMessage(name) {
     return `Component with name '${name}' is reserved and not permitted`
 }
 
-export function getBaseInjectedObject(arg) {
-    let arr = arg.$ref.split(DOT);
-    return {$ref: arr[0]};;
-}
-
-export function getInjectedObjectProp(arg) {
-    let arr = arg.$ref.split(DOT);
-    return arr[1];
-}
-
 export default function createContext(originalSpec) {
-    const aopRemovers = [];
     const namesInResolvingOrder = [];
     const destroyers = [];
+    const ready = {};
 
     /* merge specs if array provided */
     let mergedSpecs;
@@ -73,7 +65,7 @@ export default function createContext(originalSpec) {
                 delete this[prop];
             }
         }
-        forEach(aopRemovers, (remover) => remover.remove());
+
         for (var i = 0; i < namesInResolvingOrder.length; i++) {
             delete namesInResolvingOrder[i];
         }
@@ -100,7 +92,6 @@ export default function createContext(originalSpec) {
 
     let entries = Object.entries(spec);
     let vertices = {};
-    let argumentsSubstitutions = {};
 
     const createOrGetVertex = (name) => {
         if(vertices[name]) {
@@ -111,43 +102,6 @@ export default function createContext(originalSpec) {
         }
     }
 
-    /* ----------------------------- aroundOriginal ---------------------------*/
-    const aroundOriginal = (joinpoint) => {
-        let { args, proceed } = joinpoint;
-        let argsProps = {};
-        let flattenedArgs = flatten(args);
-
-        let injectedArgs = map(flattenedArgs, (arg, index) => {
-            if(isRef(arg)) {
-                let refString = arg.$ref;
-                if(refString.indexOf(DOT) != -1) {
-                    argsProps[index] = getInjectedObjectProp(arg);
-                    return argumentsSubstitutions[getBaseInjectedObject(arg)];
-                } else {
-                    return argumentsSubstitutions[refString];
-                }
-            } else {
-                return arg;
-            }
-        });
-
-        return when.map(injectedArgs).then(resolved => {
-
-            let resultArgs = reduce(resolved, (res, arg, index) => {
-                if(argsProps[index]) {
-                    if(isNil(arg)) throw new Error(NULL_OR_UNDEFINED_HAS_NO_PROPERTY);
-                    res.push(arg[argsProps[index]]);
-                } else {
-                    res.push(arg);
-                }
-                return res;
-            }, []);
-
-            return proceed.apply(null, resultArgs)
-        });
-    }
-    /* ---------------------------- /aroundOriginal ----------------------------*/
-
     let components = reduce(entries, (res, item) => {
         let [name, componentDef] = item;
         if(componentDef && componentDef.destroy && isFunction(componentDef.destroy)) {
@@ -157,6 +111,7 @@ export default function createContext(originalSpec) {
             let { module, args } = componentDef.create;
             assign(res, {
                 [name] : {
+                    componentModule: new ComponentModule(module, ready),
                     module,
                     args
                 }
@@ -164,6 +119,7 @@ export default function createContext(originalSpec) {
         } else {
             assign(res, {
                 [name] : {
+                    componentModule: new ComponentModule(() => spec[name], ready),
                     module: () => spec[name]
                 }
             });
@@ -210,13 +166,14 @@ export default function createContext(originalSpec) {
 
             namesInResolvingOrder.push(name);
 
-            let remover = meld.around(components[name], 'module', aroundOriginal);
-            aopRemovers.push(remover);
+            let componentModule = components[name].componentModule;
 
-            let originalArgs = components[name].args;
-            argumentsSubstitutions[name] = components[name].module(originalArgs);
+            let result = componentModule.invoke.apply(componentModule, components[name].args);
+            ready[name] = result;
 
-            promises.push(argumentsSubstitutions[name]);
+            componentModule.destroy();
+
+            promises.push(ready[name]);
         }
 
         depthFirstSearch(digraph, vertices[HEAD], {
