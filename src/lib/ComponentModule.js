@@ -118,12 +118,11 @@ export default class ComponentModule {
         /* возможно, некоторые из компонентов возвращают не "готовые" значения, а промисы */
         let argsToWait = map(args, arg => {
             if(isRef(arg)) {
-                let refString = arg.$ref;
                 if(isComplexReference(arg)) {
                     /* в случае "сложной" ссылки в массив аргументов подставляется корневой компонент */
                     return argumentsSubstitutions[getBaseComponentReference(arg)];
                 } else {
-                    return argumentsSubstitutions[refString];
+                    return argumentsSubstitutions[arg.$ref];
                 }
             } else {
                 return arg;
