@@ -1,10 +1,10 @@
 Lightweight Dependency Injection Container.
 
-##Install
+## Install
 npm i lightwire.js
 
-##Tests
+## Tests
 npm test
 
-##Perf & memory
+## Perf & memory
 npm start
