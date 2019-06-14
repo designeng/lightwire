@@ -32,7 +32,7 @@ export default async function run(perfName, asyncFunc) {
 
             // return context.destroy();
         }).catch(err => {
-            console.error('Error in context creation');
+            console.error('Error in context creation', err);
         })
     }
 
