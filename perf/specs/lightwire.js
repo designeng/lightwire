@@ -3,8 +3,11 @@ import defer from '../../src/decorators/defer';
 import injectJson from '../../src/decorators/injectJson';
 
 const firstSpec = {
-    @args()
-    first: () => 'first'
+    @args({$ref: 'someHeavyComponent'})
+    first: (someHeavyComponent) => ({
+        one: 'first',
+        two: someHeavyComponent
+    })
 }
 
 const secondSpec = {
@@ -24,6 +27,15 @@ const responseSpec = {
 }
 
 export default {
+    @args()
+    someHeavyComponent: () => {
+        let arr = [];
+        for (var i = 0; i < 100; i++) {
+            arr.push(`${i}_AAAAAAAAAAAA`);
+        }
+        return arr;
+    },
+
     @args({$ref: 'someDep'})
     someComponent: (someDep) => {
         return someDep().then(ctx => {
@@ -38,7 +50,7 @@ export default {
         });
     },
 
-    @defer([firstSpec, secondSpec])
+    @defer([firstSpec, secondSpec], {$ref: 'someHeavyComponent'})
     someDep: {},
 
     @args()
@@ -46,9 +58,9 @@ export default {
         url: 'http://example.com'
     }),
 
-    @injectJson(
-        [firstSpec, responseSpec],
-        {$ref: '__env'}
-    )
-    someResult: {},
+    // @injectJson(
+    //     [firstSpec, responseSpec],
+    //     {$ref: '__env'}
+    // )
+    // someResult: {},
 }
