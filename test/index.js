@@ -24,7 +24,6 @@ const addSyncTestFiles = (dirs) => {
             //     if(_.last(fragments) === 'lib' && [
             //         'defer.js'
             //     ].indexOf(file) != -1){
-            //         console.log('ADDED', file);
             //         mocha.addFile(path.join(dir, file))
             //     }
             // });
