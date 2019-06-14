@@ -45,7 +45,7 @@ export default {
     __env: () => ({
         url: 'http://example.com'
     }),
-    
+
     @injectJson(
         [firstSpec, responseSpec],
         {$ref: '__env'}
