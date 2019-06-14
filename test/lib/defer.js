@@ -115,17 +115,17 @@ const specOne = {
 
     @defer(
         {
-            @args({$ref: 'env'})
+            @args({$ref: 'envRenamedKey'})
             a: () => 'a',
 
-            @args({$ref: 'envOther'})
+            @args({$ref: 'envOtherRenamedKey'})
             b: () => 'b',
         },
         /* provide: */
         {$ref: 'someNum'},
         {
-            env: {$ref: 'env'},
-            envOther: {$ref: 'envOther'}
+            envRenamedKey: {$ref: 'env'},
+            envOtherRenamedKey: {$ref: 'envOther'}
         }
     )
     deferredComponent: {},
@@ -134,7 +134,7 @@ const specOne = {
     A: (injectedFunc) => injectedFunc()
 }
 
-describe('Create context with deferred component & provided spec', async () => {
+describe('Create context with deferred component & provided spec & renamed components', async () => {
     let context;
 
     before(async function() {
