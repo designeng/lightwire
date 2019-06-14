@@ -120,12 +120,21 @@ const specOne = {
 
             @args({$ref: 'envOtherRenamedKey'})
             b: () => 'b',
+
+            @args({$ref: 'someFn'})
+            c: (someFn) => someFn(),
+
+            @args({$ref: 'someArray'})
+            d: (someArray) => someArray[0]
         },
         /* provide: */
+        {}, /* empty object is not provided - no error should be thrown */
         {$ref: 'someNum'},
         {
             envRenamedKey: {$ref: 'env'},
-            envOtherRenamedKey: {$ref: 'envOther'}
+            envOtherRenamedKey: {$ref: 'envOther'},
+            someFn: () => 'c',
+            someArray: ['d']
         }
     )
     deferredComponent: {},
@@ -155,6 +164,14 @@ describe('Create context with deferred component & provided spec & renamed compo
 
     it('context A.b value', () => {
         expect(context.A.b).to.equal('b');
+    });
+
+    it('context A.c value', () => {
+        expect(context.A.c).to.equal('c');
+    });
+
+    it('context A.d value', () => {
+        expect(context.A.d).to.equal('d');
     });
 
     after(async function() {
