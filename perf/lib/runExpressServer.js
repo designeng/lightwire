@@ -30,8 +30,8 @@ export default function runExpressServer(perfName, memory, seconds) {
         });
     });
 
-    app.listen(3000, function () {
-        console.log('Open http://localhost:3000');
-        exec('open -a "Google Chrome" http://localhost:3000');
+    app.listen(3001, function () {
+        console.log('Open http://localhost:3001');
+        exec('open -a "Google Chrome" http://localhost:3001');
     });
 }
