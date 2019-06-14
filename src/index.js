@@ -5,9 +5,13 @@ import defer from './decorators/defer';
 import fork from './decorators/fork';
 import injectJson from './decorators/injectJson';
 
-export default createContext;
+module.exports = createContext;
 
-export args;
-export defer;
-export fork;
-export injectJson;
+module.exports = {
+    decorators: {
+        args,
+        defer,
+        fork,
+        injectJson
+    }
+}
