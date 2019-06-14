@@ -98,3 +98,70 @@ describe('Create context with deferred component', async () => {
         }
     });
 });
+
+const specOne = {
+    @args()
+    env: () => ({
+        url: 'http://example.com'
+    }),
+
+    @args()
+    envOther: () => ({
+        type: 'crud'
+    }),
+
+    @args()
+    someNum: () => 1,
+
+    @defer(
+        {
+            @args({$ref: 'env'})
+            a: () => 'a',
+
+            @args({$ref: 'envOther'})
+            b: () => 'b',
+        },
+        /* provide: */
+        {$ref: 'someNum'},
+        {
+            env: {$ref: 'env'},
+            envOther: {$ref: 'envOther'}
+        }
+    )
+    deferredComponent: {},
+
+    @args({$ref: 'deferredComponent'})
+    A: (injectedFunc) => injectedFunc()
+}
+
+describe('Create context with deferred component & provided spec', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext(specOne);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
+    });
+
+    it('context A.a value', () => {
+        expect(context.A.a).to.equal('a');
+    });
+
+    it('context A.b value', () => {
+        expect(context.A.b).to.equal('b');
+    });
+
+    after(async function() {
+        try {
+            context.destroy();
+        } catch (error) {
+            console.log('ERROR on destroy:' , error);
+        }
+    });
+});
