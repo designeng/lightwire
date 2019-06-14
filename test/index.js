@@ -18,7 +18,7 @@ const addSyncTestFiles = (dirs) => {
                 mocha.addFile(path.join(dir, file))
             });
 
-            /* dev */
+            /* dev - test single file */
             // .forEach(file => {
             //     let fragments = dir.split('/')
             //     if(_.last(fragments) === 'lib' && [
