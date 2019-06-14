@@ -1,5 +1,5 @@
 module.exports = {
-    input: 'src/lib/index.js',
+    input: 'src/index.js',
     output: {
         file: './dist/lightwire.js',
         format: 'cjs'
