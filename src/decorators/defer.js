@@ -1,38 +1,36 @@
 import createContext, { isRef } from '../lib/createContext';
-import { map, reduce, assign, union, isArray, isObject, forIn } from 'lodash';
-
-function traverseForRefs(obj, callback) {
-    forIn(obj, function (val, key) {
-        if (isArray(val)) {
-            val.forEach(function(el) {
-                if (isObject(el)) {
-                    traverseForRefs(el, callback);
-                }
-            });
-        } else if(isObject(val)) {
-            traverseForRefs(val, callback);
-        } else if (isObject(key)) {
-            traverseForRefs(obj[key], callback);
-        } else {
-            if(key === '$ref') {
-                let arg = {$ref: val}
-                callback(arg);
-            } else {
-                /* TODO: simple value */
-            }
-        }
-    });
-}
+import { map, reduce, forEach, assign, union, isArray, isObject, isString } from 'lodash';
 
 export default function defer(specs, ...provide) {
     return (target, name, description) => {
         const _specs = isArray(specs) ? specs : [specs]; /* normalize */
+        const renamed = {};
 
-        const realArgs = [];
-
-        traverseForRefs(provide, (arg) => {
-            realArgs.push(arg);
-        });
+        const realArgs = reduce(provide, (res, item, index) => {
+            let entries = Object.entries(item);
+            if(entries.length > 1) {
+                forEach(entries, (entry, index) => {
+                    let key = entries[index][0];
+                    let name = entries[index][1];
+                    if(key === '$ref' && isString(name)) {
+                        res.push({$ref: name});
+                    } else {
+                        renamed[index] = key;
+                        let _entries = Object.entries(name); /* name should be object here. TODO: test for $ref in _entries[0][0] */
+                        res.push({$ref: _entries[0][1]});
+                    }
+                })
+            } else if(entries.length === 1) {
+                let key = entries[0][0];
+                let name = entries[0][1];
+                if(key === '$ref' && isString(name)) {
+                    res.push({$ref: name});
+                }
+            } else {
+                /* do nothing */
+            }
+            return res;
+        }, []);
 
         return {
             value: {
@@ -40,9 +38,11 @@ export default function defer(specs, ...provide) {
                     module: (...resolved) => {
                         let provideSpec = reduce(realArgs, (res, arg, index) => {
                             if(isRef(arg)) {
-                                assign(res, {
-                                    [arg.$ref]: resolved[index]
-                                })
+                                if(renamed[index]) {
+                                    assign(res, { [renamed[index]]: resolved[index] })
+                                } else {
+                                    assign(res, { [arg.$ref]: resolved[index] })
+                                }
                             }
                             return res;
                         }, {});
