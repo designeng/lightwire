@@ -21,12 +21,10 @@ const addSyncTestFiles = (dirs) => {
             /* dev */
             // .forEach(file => {
             //     let fragments = dir.split('/')
-            //     if(_.last(fragments) === 'component') {
-            //         mocha.addFile(path.join(dir, file))
-            //     } else if(_.last(fragments) === 'lib' && [
-            //         'simpleContext.js',
-            //         'context.js'
+            //     if(_.last(fragments) === 'lib' && [
+            //         'defer.js'
             //     ].indexOf(file) != -1){
+            //         console.log('ADDED', file);
             //         mocha.addFile(path.join(dir, file))
             //     }
             // });
