@@ -1,6 +1,6 @@
 import when from 'when';
 import meld from 'meld';
-import { map, reduce, forEach, isObject, isString, first } from 'lodash';
+import { map, reduce, forEach, isObject, isString, isNil, first } from 'lodash';
 
 const DOT = '.';
 
@@ -44,6 +44,7 @@ export function getBaseComponentReference(arg) {
  * @returns {Any} значение поля
  */
 export function diveIntoObjectByReferenceAndGetReferenceValue(obj, $ref) {
+    if(isNil(obj)) throw new Error(`Can not resolve $ref ${$ref}`);
     let fragments = $ref.split(DOT);
     return reduce(fragments, (res, fragment) => {
         if(res.hasOwnProperty(fragment)) {
