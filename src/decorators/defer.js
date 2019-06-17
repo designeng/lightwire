@@ -62,12 +62,8 @@ export default function defer(specs, ...provide) {
                         }, {});
                         let mergedSpecs = _specs.concat(provideSpec);
 
-                        const callback = (spec) => {
-                            let newSpecs = mergeSpecs(mergedSpecs, spec);
-                            console.log('newSpecs......', newSpecs);
-                            return createContext(newSpecs);
-                        }
-                        
+                        const callback = (spec) => createContext(mergeSpecs(mergedSpecs.concat(spec)));
+
                         return callback;
                     },
                     args: realArgs
