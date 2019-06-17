@@ -201,7 +201,7 @@ const specTwo = {
     response: (injectedFunc) => injectedFunc({B: 2})
 }
 
-xdescribe('Create context with deferred spec & args provided when function is invoked', async () => {
+describe('Create context with deferred spec & args provided when function is invoked', async () => {
     let context;
 
     before(async function() {
