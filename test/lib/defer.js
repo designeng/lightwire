@@ -182,3 +182,49 @@ describe('Create context with deferred component & provided spec & renamed compo
         }
     });
 });
+
+const specTwo = {
+    @args()
+    A: () => 1,
+
+    @defer(
+        {
+            @args({$ref: 'A'}, {$ref: 'B'})
+            a: (a, b) => a + b
+        },
+        /* provide A now, provide B later when func is invoked */
+        {$ref: 'A'}
+    )
+    deferredComponent: {},
+
+    @args({$ref: 'deferredComponent'})
+    response: (injectedFunc) => injectedFunc({B: 2})
+}
+
+xdescribe('Create context with deferred spec & args provided when function is invoked', async () => {
+    let context;
+
+    before(async function() {
+        try {
+            context = await createContext(specTwo);
+        } catch (error) {
+            console.log('ERROR:' , error);
+        }
+    });
+
+    it('context should be an object', () => {
+        expect(context).to.be.an('object');
+    });
+
+    it('context response value', () => {
+        expect(context.response.a).to.equal(3);
+    });
+
+    after(async function() {
+        try {
+            context.destroy();
+        } catch (error) {
+            console.log('ERROR on destroy:' , error);
+        }
+    });
+});

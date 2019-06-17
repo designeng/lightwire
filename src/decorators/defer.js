@@ -1,4 +1,4 @@
-import createContext, { isRef } from '../lib/createContext';
+import createContext, { isRef, mergeSpecs } from '../lib/createContext';
 import { map, reduce, forEach, assign, union, isArray, isObject, isString } from 'lodash';
 
 export default function defer(specs, ...provide) {
@@ -61,7 +61,13 @@ export default function defer(specs, ...provide) {
                             return res;
                         }, {});
                         let mergedSpecs = _specs.concat(provideSpec);
-                        const callback = () => createContext(mergedSpecs);
+
+                        const callback = (spec) => {
+                            let newSpecs = mergeSpecs(mergedSpecs, spec);
+                            console.log('newSpecs......', newSpecs);
+                            return createContext(newSpecs);
+                        }
+                        
                         return callback;
                     },
                     args: realArgs
