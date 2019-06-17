@@ -7,11 +7,9 @@ import injectJson from './decorators/injectJson';
 
 export default createContext;
 
-module.exports = {
-    decorators: {
-        args,
-        defer,
-        fork,
-        injectJson
-    }
+export const decorators = {
+    args,
+    defer,
+    fork,
+    injectJson
 }
