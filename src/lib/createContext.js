@@ -36,6 +36,15 @@ export function createReservedNameErrorMessage(name) {
     return `Component with name '${name}' is reserved and not permitted`
 }
 
+export function mergeSpecs(specs) {
+    return reduce(specs, (res, spec) => {
+        for(let component in spec) {
+            assign(res, {[component]: spec[component]});
+        }
+        return res;
+    }, {});
+}
+
 export default function createContext(originalSpec) {
     const namesInResolvingOrder = [];
     const destroyers = [];
@@ -44,12 +53,7 @@ export default function createContext(originalSpec) {
     /* merge specs if array provided */
     let mergedSpecs;
     if(isArray(originalSpec)) {
-        mergedSpecs = reduce(originalSpec, (res, spec) => {
-            for(let component in spec) {
-                assign(res, {[component]: spec[component]});
-            }
-            return res;
-        }, {});
+        mergedSpecs = mergeSpecs(originalSpec);
     } else if(!isObject(originalSpec)) {
         throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
     }
