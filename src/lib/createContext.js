@@ -38,8 +38,9 @@ export function createReservedNameErrorMessage(name) {
 
 export function mergeSpecs(specs) {
     return reduce(specs, (res, spec) => {
-        for(let component in spec) {
-            assign(res, {[component]: spec[component]});
+        let sp = isArray(spec) ? mergeSpecs(spec) : spec;
+        for(let component in sp) {
+            assign(res, {[component]: sp[component]});
         }
         return res;
     }, {});
