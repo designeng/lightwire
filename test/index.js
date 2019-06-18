@@ -22,7 +22,7 @@ const addSyncTestFiles = (dirs) => {
             // .forEach(file => {
             //     let fragments = dir.split('/')
             //     if(_.last(fragments) === 'lib' && [
-            //         'defer.js'
+            //         'mergeSpecs.js'
             //     ].indexOf(file) != -1){
             //         mocha.addFile(path.join(dir, file))
             //     }
@@ -41,5 +41,5 @@ mocha.run(function(failures) {
 });
 
 process.on('unhandledRejection', (error, promise) => {
-    console.log('Handle the promise: ', promise, ' Caught an error: ', error);
+    // console.log('Handle the promise: ', promise, ' Caught an error: ', error);
 });
