@@ -6,12 +6,12 @@ describe('Function mergeSpecs', async () => {
 
     before(function() {
         resultSpec = mergeSpecs([{
-            a: 1
+            a: 'a'
         }, [{
-            b: 2
+            b: 'b'
         }, {
-            c: 3
-        }]])
+            c: 'c'
+        }, [{d: 'd'}]]])
     });
 
     it('should return object', () => {
@@ -19,8 +19,9 @@ describe('Function mergeSpecs', async () => {
     });
 
     it('should merge specs defined in nested array', () => {
-        expect(resultSpec.a).to.equal(1);
-        expect(resultSpec.b).to.equal(2);
-        expect(resultSpec.c).to.equal(3);
+        expect(resultSpec.a).to.equal('a');
+        expect(resultSpec.b).to.equal('b');
+        expect(resultSpec.c).to.equal('c');
+        expect(resultSpec.d).to.equal('d');
     });
 });
