@@ -73,7 +73,7 @@ export default function createContext(originalSpec) {
 
     const destroy = function() {
         for(let prop in this) {
-            if(!isNil(this[prop]) && this[prop].hasOwnProperty('destroy')) {
+            if(!isNil(this[prop]) && Object.getPrototypeOf(this[prop]) !== null && this[prop].hasOwnProperty('destroy')) {
                 when(this[prop].destroy()).then(() => delete this[prop])
             } else {
                 delete this[prop];
