@@ -36,7 +36,7 @@ const getBaseInjectedObject = (arg) => {
 
 export function createReservedNameErrorMessage(name, specKeys) {
     let message = `Component with name '${name}' is reserved and not permitted`;
-    if(specKeys && specKeys.length) message += `Spec with components: ${specKeys}`;
+    if(specKeys && specKeys.length) message += `. Spec with components: ${specKeys}`;
     return message;
 }
 
@@ -68,17 +68,17 @@ export default function createContext(originalSpec) {
         mergedSpecs = mergeSpecs(originalSpec);
     } else if(!isObject(originalSpec)) {
         throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
+    } else {
+        RESERVED_NAMES.map(name => {
+            if(originalSpec.hasOwnProperty(name)) {
+                throw new Error(createReservedNameErrorMessage(name, keys(spec)));
+            }
+        });
     }
 
     let mergedSpecsKeys = keys(mergedSpecs);
 
     const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
-
-    RESERVED_NAMES.map(name => {
-        if(spec.hasOwnProperty(name)) {
-            throw new Error(createReservedNameErrorMessage(name, keys(spec)));
-        }
-    });
 
     /* create additional vertex connected with all others */
     let componentNames = Object.keys(spec);
