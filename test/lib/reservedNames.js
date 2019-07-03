@@ -1,8 +1,10 @@
 import { forEach } from 'lodash';
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import when from 'when';
 
 import createContext, { HEAD, createReservedNameErrorMessage } from '../../src/lib/createContext';
+
+chai.use(require('chai-match'));
 
 const noop = () => {}
 
@@ -26,7 +28,7 @@ forEach([HEAD, 'destroy'], name => {
         });
 
         it('should throw error with message', () => {
-            expect(errors[0]).to.equal(createReservedNameErrorMessage(name));
+            expect(errors[0]).to.match(new RegExp(createReservedNameErrorMessage(name)));
         });
     });
 })

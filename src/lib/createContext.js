@@ -34,8 +34,10 @@ const getBaseInjectedObject = (arg) => {
     return arr[0];
 }
 
-export function createReservedNameErrorMessage(name) {
-    return `Component with name '${name}' is reserved and not permitted`
+export function createReservedNameErrorMessage(name, specKeys) {
+    let message = `Component with name '${name}' is reserved and not permitted`;
+    if(specKeys && specKeys.length) message += `Spec with components: ${specKeys}`;
+    return message;
 }
 
 export function mergeSpecs(specs) {
@@ -56,6 +58,13 @@ export default function createContext(originalSpec) {
     /* merge specs if array provided */
     let mergedSpecs;
     if(isArray(originalSpec)) {
+        forEach(originalSpec, spec => {
+            RESERVED_NAMES.map(name => {
+                if(spec.hasOwnProperty(name)) {
+                    throw new Error(createReservedNameErrorMessage(name, keys(spec)));
+                }
+            });
+        });
         mergedSpecs = mergeSpecs(originalSpec);
     } else if(!isObject(originalSpec)) {
         throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
@@ -67,7 +76,7 @@ export default function createContext(originalSpec) {
 
     RESERVED_NAMES.map(name => {
         if(spec.hasOwnProperty(name)) {
-            throw new Error(createReservedNameErrorMessage(name));
+            throw new Error(createReservedNameErrorMessage(name, keys(spec)));
         }
     });
 
