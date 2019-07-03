@@ -71,7 +71,7 @@ export default function createContext(originalSpec) {
     } else {
         RESERVED_NAMES.map(name => {
             if(originalSpec.hasOwnProperty(name)) {
-                throw new Error(createReservedNameErrorMessage(name, keys(spec)));
+                throw new Error(createReservedNameErrorMessage(name, keys(originalSpec)));
             }
         });
     }
