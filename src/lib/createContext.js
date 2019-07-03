@@ -1,4 +1,4 @@
-import { map, forEach, reduce, assign, flatten, clone, isFunction, isArray, isObject, isNil } from 'lodash';
+import { map, forEach, keys, intersection, reduce, assign, flatten, clone, isFunction, isArray, isObject, isNil } from 'lodash';
 import when from 'when';
 import sequence from 'when/sequence';
 import meld from 'meld';
@@ -22,6 +22,8 @@ import depthFirstSearch from '../graph/algorithms/depthFirstSearch';
 import detectDirectedCycle from '../graph/algorithms/detectDirectedCycle';
 
 const DOT = '.';
+
+const RESERVED_NAMES = [HEAD, 'destroy'];
 
 export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
@@ -59,13 +61,15 @@ export default function createContext(originalSpec) {
         throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
     }
 
-    [HEAD, 'destroy'].map(name => {
-        if(originalSpec.hasOwnProperty(name)) {
+    let mergedSpecsKeys = keys(mergedSpecs);
+
+    const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
+
+    RESERVED_NAMES.map(name => {
+        if(spec.hasOwnProperty(name)) {
             throw new Error(createReservedNameErrorMessage(name));
         }
     });
-
-    const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
 
     /* create additional vertex connected with all others */
     let componentNames = Object.keys(spec);
