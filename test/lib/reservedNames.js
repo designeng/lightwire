@@ -7,16 +7,12 @@ import createContext, { HEAD, createReservedNameErrorMessage } from '../../src/l
 const noop = () => {}
 
 forEach([HEAD, 'destroy'], name => {
-    describe(`Reserved ${name} component name`, async () => {
-        let context, errors = [];
-        let spec = {
-            [name]: {
-                create: {
-                    module: noop
-                }
-            }
-        }
+    let context, errors = [];
+    let spec = {
+        [name]: noop
+    }
 
+    describe(`Reserved ${name} component name`, async () => {
         before(async function() {
             try {
                 context = await createContext(spec);
