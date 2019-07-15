@@ -43,15 +43,15 @@ export function getBaseComponentReference(arg) {
  соответствующий компоненту
  * @returns {Any} значение поля
  */
-export function diveIntoObjectByReferenceAndGetReferenceValue(obj, $ref) {
-    if(isNil(obj)) throw new Error(`Can not resolve $ref ${$ref}`);
+export function diveIntoObjectByReferenceAndGetReferenceValue(obj, $ref, baseRefs, index) {
+    if(isNil(obj)) throw new Error(`Can not resolve $ref ${$ref}, ${baseRefs[index]} is null or undefided`);
     let fragments = $ref.split(DOT);
     return reduce(fragments, (res, fragment) => {
         if(res.hasOwnProperty(fragment)) {
             res = res[fragment];
             return res;
         } else {
-            throw new Error(`Can not resolve $ref ${$ref}`);
+            throw new Error(`Can not resolve $ref ${baseRefs[index]}.${$ref}`);
         }
     }, obj);
 }
@@ -114,14 +114,17 @@ export default class ComponentModule {
 
         /* у нас есть готовые компоненты для подстановки? */
         let argumentsSubstitutions = this.argumentsSubstitutions;
+        let baseRefs = {};
         let complexArgs = getComplexReferences(args);
 
         /* возможно, некоторые из компонентов возвращают не "готовые" значения, а промисы */
-        let argsToWait = map(args, arg => {
+        let argsToWait = map(args, (arg, index) => {
             if(isRef(arg)) {
                 if(isComplexReference(arg)) {
                     /* в случае "сложной" ссылки в массив аргументов подставляется корневой компонент */
-                    return argumentsSubstitutions[getBaseComponentReference(arg)];
+                    let baseRef = getBaseComponentReference(arg);
+                    baseRefs[index] = baseRef;
+                    return argumentsSubstitutions[baseRef];
                 } else {
                     return argumentsSubstitutions[arg.$ref];
                 }
@@ -136,7 +139,7 @@ export default class ComponentModule {
             куда нужно углубиться, чтобы получить искомое значение */
             let newArgs = map(resolvedArgs, (arg, index) => {
                 if(complexArgs[index]) {
-                    return diveIntoObjectByReferenceAndGetReferenceValue(arg, complexArgs[index]);
+                    return diveIntoObjectByReferenceAndGetReferenceValue(arg, complexArgs[index], baseRefs, index);
                 } else {
                     return arg;
                 }
