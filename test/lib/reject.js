@@ -55,7 +55,7 @@ describe('Reject in spec', async () => {
 
 const specWithReferenceError = {
     @args()
-    someComponent: () => aaa, /* should throw error */
+    someComponent: () => aaa, /* should throw ComponentInvocationError */
 }
 
 describe('specWithReferenceError', async () => {
