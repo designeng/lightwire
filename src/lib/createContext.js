@@ -29,6 +29,14 @@ export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
+function NotDefinedComponentError(message) {
+    this.constructor.prototype.__proto__ = Error.prototype;
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = 500;
+}
+
 const getBaseInjectedObject = (arg) => {
     let arr = arg.$ref.split(DOT);
     return arr[0];
@@ -172,7 +180,7 @@ export default function createContext(originalSpec) {
                 }
 
                 if(!components.hasOwnProperty(name)) {
-                    throw new Error(`No component with name ${name}`)
+                    throw new NotDefinedComponentError(`No component with name ${name}`);
                 }
 
                 let vertexTo = createOrGetVertex(name);
