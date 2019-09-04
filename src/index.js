@@ -1,5 +1,7 @@
 import createContext, { mergeSpecs } from './lib/createContext';
 
+import errors from './lib/errors';
+
 import args from './decorators/args';
 import defer from './decorators/defer';
 import fork from './decorators/fork';
@@ -17,3 +19,5 @@ export const decorators = {
     fork,
     injectJson
 }
+
+export errors;
