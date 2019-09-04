@@ -1,6 +1,6 @@
 import createContext, { mergeSpecs } from './lib/createContext';
 
-import errors from './lib/errors';
+import customErrors from './lib/errors';
 
 import args from './decorators/args';
 import defer from './decorators/defer';
@@ -20,4 +20,4 @@ export const decorators = {
     injectJson
 }
 
-export errors;
+export const errors = customErrors;
