@@ -37,3 +37,11 @@ export function ComponentInvocationError(message) {
     this.message = message;
     this.code = 500;
 }
+
+export default {
+    NotValidSpecError,
+    ReservedNameError,
+    NotDefinedComponentError,
+    CyclesDetectedError,
+    ComponentInvocationError
+}
