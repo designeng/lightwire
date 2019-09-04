@@ -4,6 +4,13 @@ import sequence from 'when/sequence';
 import meld from 'meld';
 
 import ComponentModule from './ComponentModule';
+import {
+    NotValidSpecError,
+    ReservedNameError,
+    NotDefinedComponentError,
+    CyclesDetectedError,
+    ComponentInvocationError
+} from './errors';
 
 const Promise = when.promise;
 
@@ -27,46 +34,6 @@ const RESERVED_NAMES = [HEAD, 'destroy'];
 
 export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
-}
-
-function NotValidSpecError(message) {
-    this.constructor.prototype.__proto__ = Error.prototype;
-    Error.captureStackTrace(this, this.constructor);
-    this.name = this.constructor.name;
-    this.message = message;
-    this.code = 500;
-}
-
-function ReservedNameError(message) {
-    this.constructor.prototype.__proto__ = Error.prototype;
-    Error.captureStackTrace(this, this.constructor);
-    this.name = this.constructor.name;
-    this.message = message;
-    this.code = 500;
-}
-
-function NotDefinedComponentError(message) {
-    this.constructor.prototype.__proto__ = Error.prototype;
-    Error.captureStackTrace(this, this.constructor);
-    this.name = this.constructor.name;
-    this.message = message;
-    this.code = 500;
-}
-
-function CyclesDetectedError(message) {
-    this.constructor.prototype.__proto__ = Error.prototype;
-    Error.captureStackTrace(this, this.constructor);
-    this.name = this.constructor.name;
-    this.message = message;
-    this.code = 500;
-}
-
-function ComponentInvocationError(message) {
-    this.constructor.prototype.__proto__ = Error.prototype;
-    Error.captureStackTrace(this, this.constructor);
-    this.name = this.constructor.name;
-    this.message = message;
-    this.code = 500;
 }
 
 const getBaseInjectedObject = (arg) => {
@@ -240,11 +207,7 @@ export default function createContext(originalSpec) {
 
                 let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
 
-                try {
-                    promise = componentModule.invoke.apply(componentModule, components[name].args);
-                } catch(error) {
-                    reject(new ComponentInvocationError(error.message));
-                }
+                promise = componentModule.invoke.apply(componentModule, components[name].args);
 
                 argumentsSubstitutions[name] = promise;
                 namesInResolvingOrder.push(name);
