@@ -61,6 +61,14 @@ function CyclesDetectedError(message) {
     this.code = 500;
 }
 
+function ComponentInvocationError(message) {
+    this.constructor.prototype.__proto__ = Error.prototype;
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = 500;
+}
+
 const getBaseInjectedObject = (arg) => {
     let arr = arg.$ref.split(DOT);
     return arr[0];
@@ -222,6 +230,7 @@ export default function createContext(originalSpec) {
 
         let cycles = detectDirectedCycle(digraph);
         if(!cycles) {
+            let promise;
             const promises = [];
 
             const leaveVertexCallback = (v) => {
@@ -231,7 +240,11 @@ export default function createContext(originalSpec) {
 
                 let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
 
-                let promise = componentModule.invoke.apply(componentModule, components[name].args);
+                try {
+                    promise = componentModule.invoke.apply(componentModule, components[name].args);
+                } catch(error) {
+                    reject(new ComponentInvocationError(error.message));
+                }
 
                 argumentsSubstitutions[name] = promise;
                 namesInResolvingOrder.push(name);
