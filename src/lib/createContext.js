@@ -83,176 +83,178 @@ export function mergeSpecs(specs) {
 }
 
 export default function createContext(originalSpec) {
-    const namesInResolvingOrder = [];
-    const destroyers = [];
-    let argumentsSubstitutions = {};
+    return Promise(function (resolve, reject) {
+        const namesInResolvingOrder = [];
+        const destroyers = [];
+        let argumentsSubstitutions = {};
 
-    /* merge specs if array provided */
-    let mergedSpecs;
-    if(isArray(originalSpec)) {
-        forEach(originalSpec, spec => {
+        /* merge specs if array provided */
+        let mergedSpecs;
+        if(isArray(originalSpec)) {
+            forEach(originalSpec, spec => {
+                RESERVED_NAMES.map(name => {
+                    if(spec.hasOwnProperty(name)) {
+                        reject(new ReservedNameError(createReservedNameErrorMessage(name, keys(spec))));
+                    }
+                });
+            });
+            mergedSpecs = mergeSpecs(originalSpec);
+        } else if(!isObject(originalSpec)) {
+            reject(new NotValidSpecError(NOT_VALID_SPEC_ERROR_MESSAGE));
+        } else {
             RESERVED_NAMES.map(name => {
-                if(spec.hasOwnProperty(name)) {
-                    throw new ReservedNameError(createReservedNameErrorMessage(name, keys(spec)));
-                }
-            });
-        });
-        mergedSpecs = mergeSpecs(originalSpec);
-    } else if(!isObject(originalSpec)) {
-        throw new NotValidSpecError(NOT_VALID_SPEC_ERROR_MESSAGE);
-    } else {
-        RESERVED_NAMES.map(name => {
-            if(originalSpec.hasOwnProperty(name)) {
-                throw new ReservedNameError(createReservedNameErrorMessage(name, keys(originalSpec)));
-            }
-        });
-    }
-
-    let mergedSpecsKeys = keys(mergedSpecs);
-
-    const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
-
-    /* create additional vertex connected with all others */
-    let componentNames = Object.keys(spec);
-    let headArgs = map(componentNames, (name) => ({$ref: name}))
-
-    const destroy = function() {
-        for(let prop in this) {
-            if(!isNil(this[prop]) && Object.getPrototypeOf(this[prop]) !== null && this[prop].hasOwnProperty('destroy')) {
-                when(this[prop].destroy()).then(() => delete this[prop])
-            } else {
-                delete this[prop];
-            }
-        }
-
-        for (var i = 0; i < namesInResolvingOrder.length; i++) {
-            delete namesInResolvingOrder[i];
-        }
-        return sequence(destroyers);
-    }
-    destroy.bind(spec);
-
-    spec[HEAD] = {
-        create: {
-            module: (...resolvedArgs) => {
-                return reduce(componentNames, (res, name, index) => {
-                    assign(res, {
-                        [name]: resolvedArgs[index]
-                    });
-                    assign(res, {
-                        destroy
-                    })
-                    return res;
-                }, {})
-            },
-            args: headArgs
-        }
-    }
-
-    let entries = Object.entries(spec);
-    let vertices = {};
-
-    const createOrGetVertex = (name) => {
-        if(vertices[name]) {
-            return vertices[name];
-        } else {
-            vertices[name] = new GraphVertex(name);
-            return vertices[name];
-        }
-    }
-
-    let components = reduce(entries, (res, item) => {
-        let [name, componentDef] = item;
-        if(componentDef && componentDef.destroy && isFunction(componentDef.destroy)) {
-            destroyers.push(componentDef.destroy);
-        }
-        if(componentDef && componentDef.create) {
-            let { module, args } = componentDef.create;
-            assign(res, {
-                [name] : {
-                    module,
-                    args
-                }
-            });
-        } else {
-            assign(res, {
-                [name] : {
-                    module: () => spec[name]
+                if(originalSpec.hasOwnProperty(name)) {
+                    reject(new ReservedNameError(createReservedNameErrorMessage(name, keys(originalSpec))));
                 }
             });
         }
-        return res;
-    }, {});
 
-    const digraph = new Graph(true);
+        let mergedSpecsKeys = keys(mergedSpecs);
 
-    const addedKeys = {};
+        const spec = mergedSpecs ? mergedSpecs : clone(originalSpec);
 
-    forEach(components, (component, name) => {
-        let { args } = component;
-        let vertexFrom = createOrGetVertex(name);
+        /* create additional vertex connected with all others */
+        let componentNames = Object.keys(spec);
+        let headArgs = map(componentNames, (name) => ({$ref: name}))
 
-        forEach(args, (arg, index) => {
-            if(isRef(arg)) {
-                let name;
-                let refString = arg.$ref;
-
-                if(refString.indexOf(DOT) != -1) {
-                    name = getBaseInjectedObject(arg);
+        const destroy = function() {
+            for(let prop in this) {
+                if(!isNil(this[prop]) && Object.getPrototypeOf(this[prop]) !== null && this[prop].hasOwnProperty('destroy')) {
+                    when(this[prop].destroy()).then(() => delete this[prop])
                 } else {
-                    name = refString;
-                }
-
-                if(!components.hasOwnProperty(name)) {
-                    throw new NotDefinedComponentError(`No component with name ${name}`);
-                }
-
-                let vertexTo = createOrGetVertex(name);
-
-                let edge = new GraphEdge(vertexFrom, vertexTo);
-                let edgeKey = edge.getKey();
-                if(!addedKeys[edgeKey]) {
-                    digraph.addEdge(edge);
-                    addedKeys[edgeKey] = 1;
+                    delete this[prop];
                 }
             }
-        })
-    });
 
-    let cycles = detectDirectedCycle(digraph);
-    if(!cycles) {
-        const promises = [];
+            for (var i = 0; i < namesInResolvingOrder.length; i++) {
+                delete namesInResolvingOrder[i];
+            }
+            return sequence(destroyers);
+        }
+        destroy.bind(spec);
 
-        const leaveVertexCallback = (v) => {
-            let { currentVertex } = v;
-            let { value } = currentVertex;
-            let name = value;
-
-            let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
-
-            let promise = componentModule.invoke.apply(componentModule, components[name].args);
-
-            argumentsSubstitutions[name] = promise;
-            namesInResolvingOrder.push(name);
-
-            componentModule.destroy();
-
-            promises.push(promise);
+        spec[HEAD] = {
+            create: {
+                module: (...resolvedArgs) => {
+                    return reduce(componentNames, (res, name, index) => {
+                        assign(res, {
+                            [name]: resolvedArgs[index]
+                        });
+                        assign(res, {
+                            destroy
+                        })
+                        return res;
+                    }, {})
+                },
+                args: headArgs
+            }
         }
 
-        depthFirstSearch(digraph, vertices[HEAD], {
-            leaveVertex: leaveVertexCallback,
+        let entries = Object.entries(spec);
+        let vertices = {};
+
+        const createOrGetVertex = (name) => {
+            if(vertices[name]) {
+                return vertices[name];
+            } else {
+                vertices[name] = new GraphVertex(name);
+                return vertices[name];
+            }
+        }
+
+        let components = reduce(entries, (res, item) => {
+            let [name, componentDef] = item;
+            if(componentDef && componentDef.destroy && isFunction(componentDef.destroy)) {
+                destroyers.push(componentDef.destroy);
+            }
+            if(componentDef && componentDef.create) {
+                let { module, args } = componentDef.create;
+                assign(res, {
+                    [name] : {
+                        module,
+                        args
+                    }
+                });
+            } else {
+                assign(res, {
+                    [name] : {
+                        module: () => spec[name]
+                    }
+                });
+            }
+            return res;
+        }, {});
+
+        const digraph = new Graph(true);
+
+        const addedKeys = {};
+
+        forEach(components, (component, name) => {
+            let { args } = component;
+            let vertexFrom = createOrGetVertex(name);
+
+            forEach(args, (arg, index) => {
+                if(isRef(arg)) {
+                    let name;
+                    let refString = arg.$ref;
+
+                    if(refString.indexOf(DOT) != -1) {
+                        name = getBaseInjectedObject(arg);
+                    } else {
+                        name = refString;
+                    }
+
+                    if(!components.hasOwnProperty(name)) {
+                        reject(new NotDefinedComponentError(`No component with name ${name}`));
+                    }
+
+                    let vertexTo = createOrGetVertex(name);
+
+                    let edge = new GraphEdge(vertexFrom, vertexTo);
+                    let edgeKey = edge.getKey();
+                    if(!addedKeys[edgeKey]) {
+                        digraph.addEdge(edge);
+                        addedKeys[edgeKey] = 1;
+                    }
+                }
+            })
         });
 
-        return when.reduce(promises, (res, resolved, index) => {
-            assign(res, {
-                [namesInResolvingOrder[index]] : resolved
-            })
-            return res;
-        }, {}).then(context => {
-            return context[HEAD];
-        })
-    } else {
-        throw new CyclesDetectedError('Cycles detected')
-    }
+        let cycles = detectDirectedCycle(digraph);
+        if(!cycles) {
+            const promises = [];
+
+            const leaveVertexCallback = (v) => {
+                let { currentVertex } = v;
+                let { value } = currentVertex;
+                let name = value;
+
+                let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
+
+                let promise = componentModule.invoke.apply(componentModule, components[name].args);
+
+                argumentsSubstitutions[name] = promise;
+                namesInResolvingOrder.push(name);
+
+                componentModule.destroy();
+
+                promises.push(promise);
+            }
+
+            depthFirstSearch(digraph, vertices[HEAD], {
+                leaveVertex: leaveVertexCallback,
+            });
+
+            resolve(when.reduce(promises, (res, resolved, index) => {
+                assign(res, {
+                    [namesInResolvingOrder[index]] : resolved
+                })
+                return res;
+            }, {}).then(context => {
+                return context[HEAD];
+            }));
+        } else {
+            reject(new CyclesDetectedError('Cycles detected'));
+        }
+    });
 }
