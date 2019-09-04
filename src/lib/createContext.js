@@ -29,7 +29,31 @@ export function isRef(arg) {
     return arg && arg.hasOwnProperty('$ref');
 }
 
+function NotValidSpecError(message) {
+    this.constructor.prototype.__proto__ = Error.prototype;
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = 500;
+}
+
+function ReservedNameError(message) {
+    this.constructor.prototype.__proto__ = Error.prototype;
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = 500;
+}
+
 function NotDefinedComponentError(message) {
+    this.constructor.prototype.__proto__ = Error.prototype;
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.message = message;
+    this.code = 500;
+}
+
+function CyclesDetectedError(message) {
     this.constructor.prototype.__proto__ = Error.prototype;
     Error.captureStackTrace(this, this.constructor);
     this.name = this.constructor.name;
@@ -69,17 +93,17 @@ export default function createContext(originalSpec) {
         forEach(originalSpec, spec => {
             RESERVED_NAMES.map(name => {
                 if(spec.hasOwnProperty(name)) {
-                    throw new Error(createReservedNameErrorMessage(name, keys(spec)));
+                    throw new ReservedNameError(createReservedNameErrorMessage(name, keys(spec)));
                 }
             });
         });
         mergedSpecs = mergeSpecs(originalSpec);
     } else if(!isObject(originalSpec)) {
-        throw new Error(NOT_VALID_SPEC_ERROR_MESSAGE);
+        throw new NotValidSpecError(NOT_VALID_SPEC_ERROR_MESSAGE);
     } else {
         RESERVED_NAMES.map(name => {
             if(originalSpec.hasOwnProperty(name)) {
-                throw new Error(createReservedNameErrorMessage(name, keys(originalSpec)));
+                throw new ReservedNameError(createReservedNameErrorMessage(name, keys(originalSpec)));
             }
         });
     }
@@ -229,6 +253,6 @@ export default function createContext(originalSpec) {
             return context[HEAD];
         })
     } else {
-        throw new Error('Cycles detected')
+        throw new CyclesDetectedError('Cycles detected')
     }
 }
