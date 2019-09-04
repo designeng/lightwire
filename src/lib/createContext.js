@@ -207,7 +207,11 @@ export default function createContext(originalSpec) {
 
                 let componentModule = new ComponentModule(components[name].module, argumentsSubstitutions);
 
-                promise = componentModule.invoke.apply(componentModule, components[name].args);
+                try {
+                    promise = componentModule.invoke.apply(componentModule, components[name].args);
+                } catch (e) {
+                    reject(new ComponentInvocationError(e.message));
+                }
 
                 argumentsSubstitutions[name] = promise;
                 namesInResolvingOrder.push(name);
