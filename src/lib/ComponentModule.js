@@ -2,8 +2,6 @@ import when from 'when';
 import meld from 'meld';
 import { map, reduce, forEach, isObject, isString, isNil, first } from 'lodash';
 
-import { ComponentInvocationError } from './errors';
-
 const DOT = '.';
 
 export function isRef(arg) {
@@ -146,20 +144,13 @@ export default class ComponentModule {
                     return arg;
                 }
             });
-            try {
-                return proceed.apply(null, newArgs);
-            } catch (error) {
-                throw new ComponentInvocationError(error.message);
-            }
+
+            return proceed.apply(null, newArgs);
         })
     }
 
     invoke (...args) {
-        try {
-            return this.func.apply(null, args);
-        } catch (error) {
-            throw new ComponentInvocationError(error.message);
-        }
+        return this.func.apply(null, args);
     }
 
     destroy () {

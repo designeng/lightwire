@@ -1,6 +1,6 @@
 {
   "name": "lightwire.js",
-  "version": "0.3.9-rc.1",
+  "version": "0.3.9-rc.2",
   "description": "",
   "main": "dist/lightwire",
   "scripts": {
