@@ -73,8 +73,8 @@ describe('specWithReferenceError', async () => {
         expect(context).not.to.be.ok;
     });
 
-    it('Should catch ComponentInvocationError', () => {
-        expect(errors[0] instanceof ComponentInvocationError).to.be.ok;
+    it('Errors length should be not zero', () => {
+        expect(errors[0] instanceof ReferenceError).to.be.ok;
     });
 
     after(async function() {
