@@ -2,3 +2,6 @@
 npm-debug.log
 node_modules/*
 dist/*
+
+src/lib/Container.js
+src/lib/traverseForRefs.js
