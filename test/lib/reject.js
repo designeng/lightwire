@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import when from 'when';
 import axios from 'axios';
 import uuid from 'uuid';
-import { msleep } from 'sleep';
+import { msleep } from './utils/sleep';
 
 import createContext from '../../src/lib/createContext';
 import { ComponentInvocationError } from '../../src/lib/errors';

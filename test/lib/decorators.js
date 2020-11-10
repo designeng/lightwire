@@ -1,7 +1,7 @@
 import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
 import when from 'when';
-import { msleep } from 'sleep';
+import { msleep } from './utils/sleep';
 
 import createContext from '../../src/lib/createContext';
 import args from '../../src/decorators/args';

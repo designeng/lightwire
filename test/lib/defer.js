@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import when from 'when';
-import { msleep } from 'sleep';
+import { msleep } from './utils/sleep';
 
 import createContext from '../../src/lib/createContext';
 import args from '../../src/decorators/args';
@@ -20,19 +20,19 @@ const secondSpec = {
     @args({$ref: 'environment'})
     second: (environment) => Promise(resolve => {
         msleep(10);
-        resolve(`second_` + environment.url);
+        resolve(`second_` + environment.importantEnvVar);
     })
 }
 
 const zeroSpec = {
     @args({$ref: 'environment'})
-    zero: (environment) => 'zero_' + environment.url
+    zero: (environment) => 'zero_' + environment.importantEnvVar
 }
 
 const spec = {
     @args()
     environment: () => ({
-        url: 'http://example.com'
+        importantEnvVar: 'importantEnvVar'
     }),
 
     @args()
@@ -82,7 +82,7 @@ describe('Create context with deferred component', async () => {
     });
 
     it('context A component should have field second', () => {
-        expect(context.A.second).to.equal('second_http://example.com');
+        expect(context.A.second).to.equal('second_importantEnvVar');
     });
 
     it('context A component should have destroy method', () => {
@@ -101,7 +101,7 @@ describe('Create context with deferred component', async () => {
 const specOne = {
     @args()
     env: () => ({
-        url: 'http://example.com'
+        importantEnvVar: 'importantEnvVar'
     }),
 
     @args()
