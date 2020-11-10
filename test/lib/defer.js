@@ -1,4 +1,3 @@
-import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
 import when from 'when';
 import { msleep } from 'sleep';
