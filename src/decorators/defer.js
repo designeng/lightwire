@@ -1,5 +1,5 @@
 import createContext, { isRef, mergeSpecs } from '../lib/createContext';
-import { map, reduce, forEach, assign, union, isArray, isObject, isString } from 'lodash';
+import { reduce, forEach, assign, isArray, isObject, isString } from 'lodash';
 
 export default function defer(specs, ...provide) {
     return (target, name, description) => {
