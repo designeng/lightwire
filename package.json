@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./perf/runner",
     "test": "node ./test/runner",
+    "perf": "node ./perf/runner",
     "build": "rollup -c"
   },
   "keywords": [
