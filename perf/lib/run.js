@@ -13,7 +13,7 @@ export default async function run(perfName, asyncFunc) {
     const runContextCreation = (index) => {
         return asyncFunc().then(context => {
             if(index % 1000 === 0) {
-                console.log(index);
+                // console.log(index);
             }
             if(index % SAMPLE_PERIOD === 0) {
                 let { rss, heapTotal, heapUsed, external } = process.memoryUsage();
