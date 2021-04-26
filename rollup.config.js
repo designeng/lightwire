@@ -3,6 +3,7 @@ module.exports = {
     output: {
         file: './dist/lightwire.js',
         format: 'cjs',
+        exports: 'named'
     },
     external: [
         'lodash',
