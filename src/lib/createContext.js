@@ -1,4 +1,16 @@
-import { map, forEach, keys, intersection, reduce, assign, flatten, clone, isFunction, isArray, isObject, isNil } from 'lodash';
+import {
+    map,
+    forEach,
+    keys,
+    reduce,
+    assign,
+    clone,
+    isFunction,
+    isArray,
+    isObject,
+    isNil
+} from 'lodash';
+
 import when from 'when';
 import sequence from 'when/sequence';
 import meld from 'meld';
