@@ -1,6 +1,6 @@
 import when from 'when';
 import meld from 'meld';
-import { map, reduce, forEach, isObject, isString, isNil, first } from 'lodash';
+import { map, reduce, forEach, isObject, isString, isNil } from 'lodash';
 
 const DOT = '.';
 
