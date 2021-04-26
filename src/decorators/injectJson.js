@@ -1,5 +1,5 @@
 import createContext, { isRef } from '../lib/createContext';
-import { isArray, reduce, assign, union } from 'lodash';
+import { isArray, reduce, assign } from 'lodash';
 import when from 'when';
 
 export const RESPONSE_NOT_FOUND = 'Response component not found in specs';
