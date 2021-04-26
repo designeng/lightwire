@@ -1,7 +1,7 @@
+import http from 'http';
 import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
 import when from 'when';
-import axios from 'axios';
 import uuid from 'uuid';
 import { msleep } from './utils/sleep';
 
@@ -10,13 +10,38 @@ import { ComponentInvocationError } from '../../src/lib/errors';
 import args from '../../src/decorators/args';
 import resolver from '../../src/decorators/resolver';
 
+const getRequest = () => {
+    var options = {
+        host: 'localhost',
+        port: '3001',
+        path: `/${uuid.v4()}`,
+        method: 'GET'
+    }
+
+    return new Promise((resolve, reject) => {
+        callback = function(response) {
+            var str = '';
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                resolve(str);
+            });
+
+            response.on('error', function (error) {
+                reject(error);
+            });
+        }
+
+        http.request(options, callback);
+    });
+}
+
 const spec = {
     @args()
-    randomUrl: () => `http://localhost:3001/${uuid.v4()}`,
-
-    @args({$ref: 'randomUrl'})
-    requestNotExistingResource: (randomUrl) => {
-        return axios.get(randomUrl).then(res => res.data);
+    requestNotExistingResource: () => {
+        return getRequest();
     },
 
     @resolver()
