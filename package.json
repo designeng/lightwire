@@ -38,7 +38,7 @@
     "chai-match": "^1.1.1",
     "essential-wire": "git://github.com/designeng/essential-wire.git#0.1",
     "express": "^4.17.1",
-    "mocha": "^6.1.4",
+    "mocha": "^10.2.0",
     "pidtree": "^0.3.0",
     "pre-push": "^0.1.1",
     "rollup": "^1.13.1",
