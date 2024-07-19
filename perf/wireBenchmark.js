@@ -1,4 +1,3 @@
-import when from 'when';
 import run from './lib/run';
 
 import wireSpec from './specs/wire';

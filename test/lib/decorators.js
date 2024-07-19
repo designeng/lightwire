@@ -1,28 +1,24 @@
-import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
-import when from 'when';
 import { msleep } from './utils/sleep';
 
 import createContext from '../../src/lib/createContext';
 import args from '../../src/decorators/args';
 
-const Promise = when.promise;
-
 const spec = {
     @args({$ref: 'C'}, {$ref: 'B'}, {$ref: 'D'})
-    A: (c, b, d) => Promise(resolve => {
+    A: (c, b, d) => new Promise(resolve => {
         msleep(10);
         resolve(c + b + d);
     }),
 
     @args()
-    B: () => Promise(resolve => {
+    B: () => new Promise(resolve => {
         msleep(10);
         resolve('B');
     }),
 
     @args()
-    C: () => Promise(resolve => {
+    C: () => new Promise(resolve => {
         msleep(10);
         resolve('C');
     }),

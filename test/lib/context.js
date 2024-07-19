@@ -1,16 +1,12 @@
-import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
-import when from 'when';
 import { msleep } from './utils/sleep';
 
 import createContext, { NOT_VALID_SPEC_ERROR_MESSAGE } from '../../src/lib/createContext';
 
-const Promise = when.promise;
-
 const spec = {
     A: {
         create: {
-            module: (c, b) => Promise(resolve => {
+            module: (c, b) => new Promise(resolve => {
                 msleep(10);
                 resolve(c + b);
             }),
@@ -23,7 +19,7 @@ const spec = {
 
     B: {
         create: {
-            module: () => Promise(resolve => {
+            module: () => new Promise(resolve => {
                 msleep(10);
                 resolve('B');
             }),
@@ -32,7 +28,7 @@ const spec = {
 
     C: {
         create: {
-            module: (d) => Promise(resolve => {
+            module: (d) => new Promise(resolve => {
                 msleep(10);
                 resolve('C' + d);
             }),
@@ -44,7 +40,7 @@ const spec = {
 
     D: {
         create: {
-            module: () => Promise(resolve => {
+            module: () => new Promise(resolve => {
                 msleep(100);
                 resolve('D');
             })

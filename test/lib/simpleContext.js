@@ -1,12 +1,8 @@
-import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
-import when from 'when';
 import { msleep } from './utils/sleep';
 
 import createContext from '../../src/lib/createContext';
 import args from '../../src/decorators/args';
-
-const Promise = when.promise;
 
 const spec = {
     @args(
@@ -20,13 +16,13 @@ const spec = {
     },
 
     @args({$ref: 'C'})
-    B: (c) => Promise(resolve => {
+    B: (c) => new Promise(resolve => {
         msleep(10);
         resolve(c + 1);
     }),
 
     @args()
-    C: () => Promise(resolve => {
+    C: () => new Promise(resolve => {
         msleep(20);
         resolve(1);
     }),

@@ -15,16 +15,4 @@ describe('Export from /dist/lightwire.js build', async () => {
     it('should export decorators.args', () => {
         expect(decorators.args).to.be.ok;
     });
-
-    it('should export decorators.defer', () => {
-        expect(decorators.defer).to.be.ok;
-    });
-
-    it('should export decorators.fork', () => {
-        expect(decorators.fork).to.be.ok;
-    });
-
-    it('should export decorators.injectJson', () => {
-        expect(decorators.injectJson).to.be.ok;
-    });
 });

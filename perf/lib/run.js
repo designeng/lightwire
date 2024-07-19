@@ -1,11 +1,18 @@
 import polyfill from '@babel/polyfill'; /* for async/await support */
 
-import when from 'when';
-
 import waitALittle from './waitALittle';
 import getTime from './getTime';
 import runExpressServer from './runExpressServer';
 import { CYCLES_COUNT, SAMPLE_PERIOD } from '../config';
+
+async function iterate(initialValue, condition, iteratee, result) {
+    let index = initialValue;
+    while (!condition(index)) {
+        await iteratee(index);
+        index++;
+    }
+    return result;
+}
 
 export default async function run(perfName, asyncFunc) {
     let start = getTime();
@@ -28,7 +35,7 @@ export default async function run(perfName, asyncFunc) {
             }
 
             /* TODO: with waitALittle pause no memory leaks? */
-            return when(waitALittle()).then(() => context.destroy());
+            return waitALittle().then(() => context.destroy());
 
             // return context.destroy();
         }).catch(err => {
@@ -36,14 +43,14 @@ export default async function run(perfName, asyncFunc) {
         })
     }
 
-    await when.iterate(
-        index => index + 1,
+    await iterate(
+        0,
         index => index >= CYCLES_COUNT,
         runContextCreation,
-        0
-    ).then(() => {
-        /* generage report and open in browser */
-        let end = getTime();
-        runExpressServer(perfName, memory, end - start);
-    })
+        null // result (not used in this case)
+    );
+
+    /* generage report and open in browser */
+    let end = getTime();
+    runExpressServer(perfName, memory, end - start);
 }
