@@ -7,9 +7,6 @@ module.exports = {
     },
     external: [
         'lodash',
-        'when',
-        'when/sequence',
         'meld',
-        'child_process'
     ]
 }
