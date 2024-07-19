@@ -1,7 +1,6 @@
 import http from 'http';
 import { map, forEach, assign } from 'lodash';
 import { expect } from 'chai';
-import when from 'when';
 import uuid from 'uuid';
 import { msleep } from './utils/sleep';
 
@@ -54,7 +53,7 @@ describe('Reject in spec', async () => {
     let context, errors = [];
 
     before(function(done) {
-        when(createContext(spec)).then(ctx => {
+        createContext(spec).then(ctx => {
             context = ctx;
         }).catch(error => {
             errors.push(error);
@@ -87,7 +86,7 @@ describe('specWithReferenceError', async () => {
     let context, errors = [];
 
     before(function(done) {
-        when(createContext(specWithReferenceError)).then(ctx => {
+        createContext(specWithReferenceError).then(ctx => {
             context = ctx;
         }).catch(error => {
             errors.push(error);

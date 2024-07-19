@@ -1,4 +1,3 @@
-import when from 'when';
 import run from './lib/run';
 
 import lightwireSpec from './specs/lightwire';

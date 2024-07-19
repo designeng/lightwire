@@ -1,6 +1,5 @@
 import args from '../../src/decorators/args';
 import defer from '../../src/decorators/defer';
-import injectJson from '../../src/decorators/injectJson';
 
 const firstSpec = {
     @args({$ref: 'someHeavyComponent'})

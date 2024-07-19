@@ -1,8 +1,9 @@
 import { expect } from 'chai';
-import { msleep } from './utils/sleep';
+import { msleep } from '../lib/utils/sleep';
 
-import createContext from '../../src/lib/createContext';
-import args from '../../src/decorators/args';
+import createContext, { decorators } from '../../dist/lightwire.min.js';
+
+const { args } = decorators;
 
 const spec = {
     @args({$ref: 'C'}, {$ref: 'B'}, {$ref: 'D'})

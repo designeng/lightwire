@@ -11,10 +11,6 @@ import {
     isNil
 } from 'lodash';
 
-import when from 'when';
-import sequence from 'when/sequence';
-import meld from 'meld';
-
 import ComponentModule from './ComponentModule';
 import {
     NotValidSpecError,
@@ -24,7 +20,9 @@ import {
     ComponentInvocationError
 } from './errors';
 
-const Promise = when.promise;
+const sequence = (tasks) => tasks.reduce((promise, task) => {
+    return promise.then(result => task().then(Array.prototype.concat.bind(result)));
+}, Promise.resolve([]));
 
 function isPromise(x) {
     return x instanceof Promise;
@@ -70,7 +68,7 @@ export function mergeSpecs(specs) {
 }
 
 export default function createContext(originalSpec) {
-    return Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         const namesInResolvingOrder = [];
         const destroyers = [];
         let argumentsSubstitutions = {};
@@ -107,7 +105,7 @@ export default function createContext(originalSpec) {
         const destroy = function() {
             for(let prop in this) {
                 if(!isNil(this[prop]) && Object.getPrototypeOf(this[prop]) !== null && this[prop].hasOwnProperty('destroy')) {
-                    when(this[prop].destroy()).then(() => delete this[prop])
+                    this[prop].destroy().then(() => delete this[prop])
                 } else {
                     delete this[prop];
                 }
@@ -233,14 +231,21 @@ export default function createContext(originalSpec) {
                 leaveVertex: leaveVertexCallback,
             });
 
-            resolve(when.reduce(promises, (res, resolved, index) => {
-                assign(res, {
-                    [namesInResolvingOrder[index]] : resolved
-                })
-                return res;
-            }, {}).then(context => {
-                return context[HEAD];
-            }));
+            resolve(
+                Promise.all(promises)
+                    .then(resolvedPromises => {
+                        const context = resolvedPromises.reduce((res, resolved, index) => {
+                            assign(res, {
+                                [namesInResolvingOrder[index]]: resolved
+                            });
+                            return res;
+                        }, {});
+                        return context;
+                    })
+                    .then(context => {
+                        return context[HEAD];
+                    })
+            );
         } else {
             reject(new CyclesDetectedError('Cycles detected'));
         }

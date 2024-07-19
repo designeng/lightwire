@@ -33,6 +33,7 @@ const addSyncTestFiles = (dirs) => {
 addSyncTestFiles([
     __dirname + '/component',
     __dirname + '/lib',
+    __dirname + '/minified',
 ]);
 
 mocha.run(function(failures) {

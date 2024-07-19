@@ -1,6 +1,5 @@
 import { forEach } from 'lodash';
 import chai, { expect } from 'chai';
-import when from 'when';
 
 import createContext, { HEAD, createReservedNameErrorMessage } from '../../src/lib/createContext';
 

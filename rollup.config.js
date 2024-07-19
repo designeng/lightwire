@@ -1,15 +1,31 @@
-module.exports = {
-    input: 'src/index.js',
-    output: {
-        file: './dist/lightwire.js',
-        format: 'cjs',
-        exports: 'named'
+const terser = require('@rollup/plugin-terser');
+
+module.exports = [
+    {
+        input: 'src/index.js',
+        output: {
+            file: './dist/lightwire.js',
+            format: 'cjs',
+            exports: 'named'
+        },
+        external: [
+            'lodash',
+            'meld',
+        ]
     },
-    external: [
-        'lodash',
-        'when',
-        'when/sequence',
-        'meld',
-        'child_process'
-    ]
-}
+    {
+        input: 'src/index.js',
+        output: {
+            file: './dist/lightwire.min.js',
+            format: 'cjs',
+            exports: 'named'
+        },
+        plugins: [
+            terser()
+        ],
+        external: [
+            'lodash',
+            'meld',
+        ]
+    }
+]
