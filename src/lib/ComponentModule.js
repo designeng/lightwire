@@ -133,20 +133,20 @@ export default class ComponentModule {
             }
         });
 
-        return when.map(argsToWait).then(resolvedArgs => {
+        return Promise.all(argsToWait).then(resolvedArgs => {
             /* для сложных ссылок arg тут может быть объектом,
             в котором в свою очередь содержатся вложенные объекты,
             куда нужно углубиться, чтобы получить искомое значение */
-            let newArgs = map(resolvedArgs, (arg, index) => {
-                if(complexArgs[index]) {
+            let newArgs = resolvedArgs.map((arg, index) => {
+                if (complexArgs[index]) {
                     return diveIntoObjectByReferenceAndGetReferenceValue(arg, complexArgs[index], baseRefs, index);
                 } else {
                     return arg;
                 }
             });
-
+        
             return proceed.apply(null, newArgs);
-        })
+        });
     }
 
     invoke (...args) {
