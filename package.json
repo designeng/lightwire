@@ -33,6 +33,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "chai": "^4.2.0",
     "chai-match": "^1.1.1",
     "essential-wire": "git://github.com/designeng/essential-wire.git#0.1",
