@@ -17,7 +17,6 @@ import {
     ReservedNameError,
     NotDefinedComponentError,
     CyclesDetectedError,
-    ComponentInvocationError
 } from './errors';
 
 const sequence = (tasks) => tasks.reduce((promise, task) => {
